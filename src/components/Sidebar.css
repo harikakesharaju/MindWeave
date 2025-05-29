@@ -1,0 +1,102 @@
+.sidebar {
+  background-color: #222;
+  color: #fff;
+  width: 60px; /* Initially collapsed width */
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: width 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center items when collapsed */
+  padding-top: 20px;
+  z-index: 10; /* Ensure it's above other content */
+}
+
+.sidebar.collapsed {
+  width: 60px;
+  align-items: center;
+}
+
+.toggle-button {
+  padding: 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.nav-items {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center icons by default */
+  margin-top: 20px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  text-decoration: none;
+  color: #eee;
+  width: 100%;
+  transition: background-color 0.2s ease, width 0.3s ease-in-out; /* Added width transition */
+  position: relative; /* For the hover text positioning */
+  justify-content: center; /* Center icon by default */
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  width: 150px; /* Expand width on hover */
+  justify-content: flex-start; /* Align text to start when expanded */
+  padding: 10px 15px; /* Adjust padding when expanded */
+}
+
+.nav-icon {
+  margin-right: 0; /* No margin needed when initially icons only */
+}
+
+.nav-text {
+  white-space: nowrap;
+  opacity: 0;
+  margin-left: 0; /* Initially no margin */
+  transition: opacity 0.2s ease-in-out, margin-left 0.2s ease-in-out;
+}
+
+.nav-item:hover .nav-text.show {
+  opacity: 1;
+  margin-left: 10px; /* Show text with margin on hover */
+}
+
+.sidebar.collapsed .nav-text {
+  display: none; /* Hide text when collapsed */
+}
+
+.sidebar:not(.collapsed) {
+  width: 150px; /* Default expanded width when not collapsed */
+  align-items: flex-start;
+}
+
+.sidebar:not(.collapsed) .nav-item {
+  justify-content: flex-start;
+  padding: 10px 15px;
+}
+
+.sidebar:not(.collapsed) .nav-text.show {
+  opacity: 1;
+  margin-left: 10px;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+}
+
+.sidebar.collapsed .nav-item:hover {
+  justify-content: flex-start; /* Adjust alignment on hover when collapsed */
+}
+
+.sidebar.collapsed .nav-item:hover .nav-icon {
+  margin-right: 10px; /* Add margin for icon when text appears */
+}

@@ -1,0 +1,52 @@
+.main-header {
+   padding: 20px;
+  background-color: #f0f0f0;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: flex-end; /* Push logout to the right */
+  align-items: center;
+  width: calc(100% - 60px); /* Adjust width based on collapsed sidebar */
+  transition: width 0.3s ease-in-out;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9; /* Below sidebar toggle but above content */
+}
+
+.sidebar.collapsed + .main-header {
+  width: calc(100% - 60px);
+}
+
+.sidebar:not(.collapsed) + .main-header {
+  width: calc(100% - 150px); /* Adjust for expanded sidebar */
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 60px; /* Adjust margin based on collapsed sidebar width */
+  margin-top: 60px; /* Adjust for header height */
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebar.collapsed ~ .main-content {
+  margin-left: 60px;
+}
+
+.sidebar:not(.collapsed) ~ .main-content {
+  margin-left: 150px; /* Adjust for expanded sidebar */
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  color: #d32f2f; /* Example color */
+  cursor: pointer;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+}
+
+.logout-button svg {
+  margin-right: 5px;
+}
