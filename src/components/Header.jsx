@@ -1,27 +1,31 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Import Link
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import './Header.css';
 
 function Header() {
     const navigate = useNavigate();
-    const loggedInUsername = localStorage.getItem('loggedInUsername'); // Get the username
+    const loggedInUsername = localStorage.getItem('loggedInUsername');
 
     const handleLogout = () => {
         localStorage.clear("loggedInUser");
-        localStorage.clear("loggedInUsername"); // Also clear the username
+        localStorage.clear("loggedInUsername");
         navigate('/auth');
     };
 
     return (
-        <header className="main-header">
+        <header className="elegant-header">
             <div className="header-left">
-                {loggedInUsername ? (
+                <Link to="/" className="logo"> {/* Link to the homepage */}
+                    MindWeave
+                </Link>
+                {loggedInUsername && (
                     <span className="header-caption">
                         What's on your mind today, {loggedInUsername}?
                     </span>
-                ) : (
+                )}
+                {!loggedInUsername && (
                     <span className="header-caption">
                         What's on your mind today?
                     </span>
