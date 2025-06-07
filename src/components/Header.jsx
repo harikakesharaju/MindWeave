@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect ,useState} from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // Import Link
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
@@ -6,11 +6,31 @@ import './Header.css';
 
 function Header() {
     const navigate = useNavigate();
-    const loggedInUsername = localStorage.getItem('loggedInUsername');
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    const [loggedInUsername, setLoggedInUsername] = useState("");
+
+   useEffect(() => {
+        async function fetchUsername() {
+            try {
+                const res = await fetch(`http://localhost:9091/api/users/${loggedInUser}`);
+                if(!res.ok){
+                    throw new Error(`error occurred while getting username:${res.status}`);
+                }
+                const userData = await res.json();
+                setLoggedInUsername(userData.username);
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
+
+        if (loggedInUser) {
+            fetchUsername();
+        }
+    }, [loggedInUser]);
 
     const handleLogout = () => {
         localStorage.clear("loggedInUser");
-        localStorage.clear("loggedInUsername");
         navigate('/auth');
     };
 
@@ -22,7 +42,7 @@ function Header() {
                 </Link>
                 {loggedInUsername && (
                     <span className="header-caption">
-                        What's on your mind today, {loggedInUsername}?
+                        What's on your mind today, {loggedInUsername} ?
                     </span>
                 )}
                 {!loggedInUsername && (

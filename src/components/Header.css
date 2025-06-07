@@ -4,7 +4,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 15px 40px; /* Increased padding for a more spacious feel */
-    background-color: #ffffff; /* Clean white background */
+  background-image: linear-gradient(to  right, #f8f9fa, #aec8f2); /* Clean white background */
     border-bottom: 1px solid #e0e0e0; /* Light grey border */
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow */
 }
@@ -28,7 +28,7 @@
 }
 
 .logout-button {
-    background-color: #e74c3c; /* A distinct color for logout */
+    background-color: #7badee; /* A distinct color for logout */
     color: white;
     border: none;
     padding: 10px 18px;
@@ -42,7 +42,8 @@
 }
 
 .logout-button:hover {
-    background-color: #c0392b;
+    color: white;
+    background-color: #457cdd;
 }
 
 .logout-button svg {

@@ -28,7 +28,7 @@ const AddPost = () => {
 
         try {
             const response = await fetch(
-                `http://localhost:9091/api/posts/create?userId=${loggedInUser}`,
+                `http://localhost:9091/api/posts/create/${loggedInUser}`,
                 {
                     method: 'POST',
                     headers: {

@@ -1,9 +1,15 @@
 /* App.css */
+body{
+    background-image: url('./images/wholeBackground.jpg'); /* Use the relative path here */
+  background-size: cover; /* Or contain, repeat, etc., depending on your preference */
+  background-repeat: repeat; /* Or no-repeat */
+  background-attachment: fixed;
+}
 .app-layout {
     display: flex;
     min-height: 100vh;
     width: 100%;
-    background-color: lightblue; /* Remove or keep for debugging */
+    /* background-color: lightblue; Remove or keep for debugging */
 }
 
 .sidebar {

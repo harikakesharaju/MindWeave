@@ -1,9 +1,9 @@
 /* Profile.css */
 .profile-container {
-    padding: 40px;
+    padding: 30px;
     max-width: 900px;
-    margin: 85px auto;
-    background-color: #f8f9fa; /* Light grey background */
+    margin: 35px auto;
+  background-image: linear-gradient(to bottom right, #f8f9fa, #aec8f2); 
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -84,7 +84,7 @@
 .follow-stats {
     display: flex;
     gap: 30px;
-    margin-top: 20px;
+    margin-top: 18px;
 }
 
 .follow-stats div {
@@ -94,17 +94,17 @@
 
 .profile-navigation h3 {
     border-bottom: 2px solid #e9ecef;
-    padding-bottom: 12px;
-    margin-bottom: 25px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
     color: #343a40;
-    font-size: 1.8em;
+    font-size: 1.5em;
 }
 
 .profile-posts {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid */
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: 12px;
+    margin-bottom:25px;
 }
 
 .post-item {
@@ -142,7 +142,7 @@
 .follow-lists {
     display: flex;
     gap: 40px;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 .followers-list,
@@ -158,7 +158,7 @@
     margin-top: 0;
     margin-bottom: 15px;
     color: #343a40;
-    font-size: 1.5em;
+    font-size: 1.2em;
     border-bottom: 1px solid #e9ecef;
     padding-bottom: 10px;
 }
@@ -288,4 +288,37 @@
 
 .accept-button-other:hover {
     background-color: #1e7e34;
+}
+
+
+.post-item {
+    position: relative; /* Needed for positioning the delete button */
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.delete-post-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #ff4d4f; /* Red color for delete action */
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px;
+    transition: color 0.2s ease-in-out;
+}
+
+.delete-post-button:hover {
+    color: #cc0000;
+}
+
+/* Optional: Default icon styling */
+.default-profile-icon {
+    color: #ccc; /* Light grey for default user icon */
 }

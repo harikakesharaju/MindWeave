@@ -1,7 +1,7 @@
 .home-container {
     font-family: 'Arial', sans-serif;
     min-height: 100vh;
-    background-color: #f4f7f6; /* Light, airy background */
+    /* background-color: #f4f7f6; Light, airy background */
     display: flex;
     flex-direction: column;
     align-items: center; /* Center content horizontally */
