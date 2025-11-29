@@ -1,0 +1,324 @@
+/* Profile.css */
+.profile-container {
+    padding: 30px;
+    max-width: 900px;
+    margin: 35px auto;
+  background-image: linear-gradient(to bottom right, #f8f9fa, #aec8f2); 
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 30px;
+}
+
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 30px;
+    background-color: #dee2e6; /* Placeholder color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5em; /* For the user icon */
+    color: #495057;
+    border: 3px solid white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info h1 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #343a40;
+    font-size: 2.2em;
+}
+
+.profile-info .email,
+.profile-info .description {
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.follow-button,
+.edit-profile-button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+}
+
+.follow-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.follow-button:hover {
+    background-color: #0056b3;
+}
+
+.edit-profile-button {
+    background-color: #28a745;
+    color: white;
+    margin-left: 10px;
+}
+
+.edit-profile-button:hover {
+    background-color: #1e7e34;
+}
+
+.follow-stats {
+    display: flex;
+    gap: 30px;
+    margin-top: 18px;
+}
+
+.follow-stats div {
+    font-weight: 600;
+    color: #495057;
+}
+
+.profile-navigation h3 {
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    color: #343a40;
+    font-size: 1.5em;
+}
+
+.profile-posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid */
+    gap: 12px;
+    margin-bottom:25px;
+}
+
+.post-item {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* To contain styled content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px; /* Minimum height for all posts */
+}
+
+.post-content {
+    padding: 15px;
+    white-space: pre-line;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-radius: inherit; /* Inherit border-radius from parent */
+}
+
+.post-timestamp {
+    color: #6c757d;
+    font-size: 0.85em;
+    margin-top: 10px;
+    display: block;
+    text-align: right;
+}
+
+.follow-lists {
+    display: flex;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.followers-list,
+.following-list {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+}
+
+.follow-lists h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #343a40;
+    font-size: 1.2em;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+}
+
+.follow-lists ul {
+    list-style: none;
+    padding: 0;
+}
+
+.follow-lists li {
+    padding: 10px 0;
+    border-bottom: 1px dotted #ced4da;
+}
+
+.follow-lists li:last-child {
+    border-bottom: none;
+}
+
+.follow-lists li a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 500;
+}
+
+.follow-lists li a:hover {
+    text-decoration: underline;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 12px;
+    color: #343a40;
+    font-size: 1.8em;
+}
+
+.modal-content div {
+    margin-bottom: 20px;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #495057;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="email"],
+.modal-content textarea {
+    width: calc(100% - 16px);
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1em;
+}
+
+.modal-content textarea {
+    min-height: 100px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.modal-actions button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+}
+
+.modal-actions button[type="button"] {
+    background-color: #dc3545;
+    color: white;
+}
+
+.modal-actions button:hover {
+    opacity: 0.8;
+}
+
+.accept-button-other {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+    margin-left: 10px; /* Adjust spacing as needed */
+}
+
+.accept-button-other:hover {
+    background-color: #1e7e34;
+}
+
+
+.post-item {
+    position: relative; /* Needed for positioning the delete button */
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.delete-post-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #ff4d4f; /* Red color for delete action */
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px;
+    transition: color 0.2s ease-in-out;
+}
+
+.delete-post-button:hover {
+    color: #cc0000;
+}
+
+/* Optional: Default icon styling */
+.default-profile-icon {
+    color: #ccc; /* Light grey for default user icon */
+}

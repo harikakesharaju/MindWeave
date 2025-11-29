@@ -1,0 +1,17 @@
+package com.myProjects.mindWeave.repositories;
+
+import com.myProjects.mindWeave.entities.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email); 
+    
+    List<User> findByEmailContainingIgnoreCase(String emailQuery);
+    List<User> findByUsernameContainingIgnoreCase(String usernameQuery);
+}

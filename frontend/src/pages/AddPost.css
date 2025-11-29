@@ -1,0 +1,181 @@
+/* AddPost.css */
+.add-post-page-split {
+    display: flex;
+    padding: 30px;
+    /* background-color: #f4f6f8; */
+    min-height: 100vh;
+}
+
+.add-post-form-container {
+      background-image: linear-gradient(to bottom right, #f8f9fa, #aec8f2); 
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 1px 2px 4px rgba(208, 226, 243);
+    width: 50%; /* Adjust as needed */
+    max-width: 600px;
+    margin-right: 20px; /* Space between form and preview */
+}
+
+.add-post-title {
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 2em;
+}
+
+.add-post-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    color: #555;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.form-textarea {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1em;
+    line-height: 1.6;
+    resize: vertical;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 150px;
+}
+
+.form-select,
+.form-color-input {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
+    height: 40px; /* Consistent height */
+}
+
+.color-picker-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.font-size-slider {
+    display: flex;
+    align-items: center;
+}
+
+.form-range {
+    flex-grow: 1;
+    margin-left: 10px;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+}
+
+.form-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+}
+
+.form-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+}
+
+.font-size-value {
+    margin-left: 10px;
+    color: #555;
+    font-size: 0.9em;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    justify-content: flex-end;
+}
+
+.post-button,
+.cancel-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.post-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.post-button:hover {
+    background-color: #0056b3;
+}
+
+.cancel-button {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.cancel-button:hover {
+    background-color: #ccc;
+}
+
+.post-preview-side {
+     background-image: linear-gradient(220deg, #f8f9fa, #aec8f2); 
+    padding: 40px;
+    border-radius: 12px;
+     box-shadow: 1px 2px 4px rgba(208, 226, 243);
+    width: 50%; /* Adjust as needed */
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align title to the top */
+}
+
+.preview-title {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.post-preview {
+    width: 100%;
+    flex-grow: 1; /* Allow it to take available vertical space */
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+    white-space: pre-line;
+    overflow-y: auto; /* In case the content is long */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}

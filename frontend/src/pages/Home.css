@@ -1,0 +1,134 @@
+.home-container {
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    /* background-color: #f4f7f6; Light, airy background */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    padding-top: 60px; /* Space for potential fixed header */
+}
+
+.home-header {
+    background-color: #8e44ad; /* A vibrant purple */
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%; /* Slightly narrower than full width */
+    max-width: 1200px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.home-header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.logout-button {
+    background: none;
+    border: 2px solid white;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button svg {
+    margin-right: 8px;
+}
+
+.logout-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.home-main-content {
+    width: 90%;
+    max-width: 1200px;
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Responsive grid */
+    gap: 20px;
+    width: 100%;
+}
+
+.post-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.post-content {
+    flex-grow: 1;
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.post-footer {
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+    color: #555;
+    border-radius: 0 0 8px 8px;
+}
+
+.post-author {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.post-author:hover {
+    text-decoration: underline;
+}
+
+.post-timestamp {
+    color: #777;
+}
+
+.no-posts {
+    font-size: 1.2em;
+    color: #555;
+    margin-top: 30px;
+}
+
+.loading, .error {
+    font-size: 1.2em;
+    color: #555;
+    margin-top: 30px;
+}
+
+.home-footer {
+    text-align: center;
+    padding: 20px 0;
+    color: #777;
+    font-size: 0.9em;
+    margin-top: 30px;
+}

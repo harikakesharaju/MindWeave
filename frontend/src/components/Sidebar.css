@@ -1,0 +1,245 @@
+/* Sidebar.css */
+
+.sidebar {
+    background-image: linear-gradient(to bottom, #f8f9fa, #aec8f2);
+    color: #064e92;
+    width: 60px; /* Initially collapsed width */
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items when collapsed */
+    padding-top: 20px;
+    z-index: 10; /* Ensure it's above other content */
+}
+
+.sidebar.collapsed {
+    width: 60px;
+    align-items: center;
+}
+
+/* No specific toggle-button in your current JSX, removed for clarity */
+/* .toggle-button {
+    padding: 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+} */
+
+.nav-items {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center icons by default */
+    margin-top: 20px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    text-decoration: none;
+    color: #1768c0;
+    width: 100%;
+    transition: background-color 0.2s ease, width 0.3s ease-in-out;
+    position: relative;
+    justify-content: center;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Specific styles for the new button-type nav item */
+.nav-item.nav-button {
+    background: none; /* Reset button default styles */
+    border: none;
+    cursor: pointer;
+    text-align: left; /* Align text within button */
+}
+
+
+.nav-item:hover {
+    background-color: rgba(161, 180, 213, 0.05);
+    width: 135px; /* Expand width on hover */
+    justify-content: flex-start; /* Align text to start when expanded */
+    padding: 10px 15px; /* Adjust padding when expanded */
+}
+
+.nav-icon {
+    margin-right: 0;
+}
+
+.nav-text {
+    white-space: nowrap;
+    opacity: 0;
+    margin-left: 0;
+    transition: opacity 0.2s ease-in-out, margin-left 0.2s ease-in-out;
+}
+
+.nav-item:hover .nav-text.show {
+    opacity: 1;
+    margin-left: 10px;
+}
+
+.sidebar.collapsed .nav-text {
+    display: none;
+}
+
+.sidebar:not(.collapsed) {
+    width: 150px;
+    align-items: flex-start;
+}
+
+.sidebar:not(.collapsed) .nav-item {
+    justify-content: flex-start;
+    padding: 10px 15px;
+}
+
+.sidebar:not(.collapsed) .nav-text.show {
+    opacity: 1;
+    margin-left: 10px;
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+}
+
+.sidebar.collapsed .nav-item:hover {
+    justify-content: flex-start;
+}
+
+.sidebar.collapsed .nav-item:hover .nav-icon {
+    margin-right: 10px;
+}
+
+/* --- New Styles for Requests Icon and Modal --- */
+
+.requests-count-badge {
+    position: absolute;
+    top: 5px; /* Adjusted position for sidebar */
+    right: 5px; /* Adjusted position for sidebar */
+    background-color: #e74c3c; /* Red badge */
+    color: white;
+    border-radius: 50%;
+    padding: 3px 7px;
+    font-size: 0.7em;
+    font-weight: bold;
+    line-height: 1;
+    min-width: 10px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    z-index: 1; /* Ensure badge is on top */
+}
+
+/* Modal Overlay and Content (similar to previous Header modal, adapted for Sidebar) */
+.requests-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002; /* Higher than sidebar */
+}
+
+.requests-modal-content {
+    background-color: white;
+    border-radius: 10px;
+    padding: 25px;
+    width: 90%;
+    max-width: 400px; /* Slightly narrower modal for sidebar */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    max-height: 70vh; /* Limit height */
+    overflow-y: auto; /* Scroll if content is too long */
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5em; /* Adjusted font size */
+}
+
+.close-modal-button {
+    background: none;
+    border: none;
+    font-size: 1.3em; /* Adjusted icon size */
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-modal-button:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding-top: 10px;
+}
+
+.requests-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0; /* Adjusted padding */
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.request-item:last-child {
+    border-bottom: none;
+}
+
+.request-username-link { /* New class for the username link */
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: color 0.2s ease;
+}
+
+.request-username-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.accept-request-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 6px 12px; /* Adjusted padding */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85em; /* Adjusted font size */
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.accept-request-button:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+    margin-top: 15px;
+}

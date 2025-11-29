@@ -1,0 +1,66 @@
+/* App.css */
+body{
+    background-image: url('./images/wholeBackground.jpg'); /* Use the relative path here */
+  background-size: cover; /* Or contain, repeat, etc., depending on your preference */
+  background-repeat: repeat; /* Or no-repeat */
+  background-attachment: fixed;
+}
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    /* background-color: lightblue; Remove or keep for debugging */
+}
+
+.sidebar {
+    /* Your existing sidebar styles from Sidebar.css will apply */
+    z-index: 10; /* Ensure it's above content */
+    width: 60px; /* Default collapsed width */
+    transition: width 0.3s ease-in-out;
+}
+
+.sidebar:not(.collapsed) {
+    width: 150px; /* Expanded width */
+}
+
+.content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 60px; /* Initial margin for collapsed sidebar */
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebar:not(.collapsed) ~ .content {
+    margin-left: 150px; /* Margin for expanded sidebar */
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px; /* Reduced horizontal padding */
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #eee;
+    z-index: 9;
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    color: #d32f2f;
+    cursor: pointer;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+}
+
+.logout-button svg {
+    margin-right: 5px;
+}
+
+.page-content {
+    padding: 20px;
+    flex-grow: 1; /* Ensure content takes remaining vertical space */
+    padding-top: 60px; /* Account for header height if not sticky */
+}
