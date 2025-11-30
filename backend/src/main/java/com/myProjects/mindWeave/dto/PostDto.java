@@ -10,11 +10,38 @@ public class PostDto {
     private LocalDateTime timestamp;
     private Long userId; // To identify the creator
     private String username; // Optionally include the username of the creator
-    private String fontStyle;
+    public String getBackgroundMode() {
+		return backgroundMode;
+	}
+
+	public void setBackgroundMode(String backgroundMode) {
+		this.backgroundMode = backgroundMode;
+	}
+
+	private String fontStyle;
     private String textColor;
     private String backgroundColor;
     private Integer fontSize;
-    // Getters and setters
+    private String heading;
+    private String imagePath; // The S3 key/path
+    private String backgroundMode; // "light" or "dark"
+    public String getHeading() {
+		return heading;
+	}
+
+	public void setHeading(String heading) {
+		this.heading = heading;
+	}
+
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
+
+	// Getters and setters
     public Long getPostId() {
         return postId;
     }

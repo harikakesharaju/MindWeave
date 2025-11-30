@@ -30,10 +30,37 @@ public class Post {
 	    private User user;
 
 	    private String fontStyle;
-	    private String textColor;
+	    public String getBackgroundMode() {
+			return backgroundMode;
+		}
+
+		public void setBackgroundMode(String backgroundMode) {
+			this.backgroundMode = backgroundMode;
+		}
+
+		private String textColor;
 	    private String backgroundColor;
 	    private Integer fontSize; // Add this field
+	    private String heading;
+	    private String backgroundMode; // "light" or "dark"
+	    public String getHeading() {
+			return heading;
+		}
 
+		public void setHeading(String heading) {
+			this.heading = heading;
+		}
+
+		public String getImagePath() {
+			return imagePath;
+		}
+
+		public void setImagePath(String imagePath) {
+			this.imagePath = imagePath;
+		}
+
+		private String imagePath;
+	    
 	    @PrePersist
 	    protected void onCreate() {
 	        timestamp = LocalDateTime.now();

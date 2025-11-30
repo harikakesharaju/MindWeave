@@ -8,6 +8,7 @@ import Search from './pages/Search';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import './App.css';
+import './index.css'; 
 
 const isAuthenticated = () => !!localStorage.getItem('loggedInUser');
 

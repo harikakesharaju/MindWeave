@@ -5,6 +5,8 @@ import Header from '../components/Header';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEdit, faCheck, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { lightenColor, darkenColor } from "../UtilityMethods";
+
 
 const Profile = () => {
     const { userId: profileId } = useParams();
@@ -88,6 +90,7 @@ const Profile = () => {
                 if (postsResponse.ok) {
                     const postsData = await postsResponse.json();
                     setPosts(postsData);
+                    console.log(postsData);
                 } else {
                     setPosts([]);
                 }
@@ -141,18 +144,19 @@ const Profile = () => {
                 }
 
                 // Fetch incoming friend requests (for display on own profile)
-                if (parsedLoggedInUser && isCurrentUserProfile) {
-                    const incomingRequestsResponse = await fetch(`${BASEURL}/api/users/${parsedLoggedInUser}/requests`);
-                    if (incomingRequestsResponse.ok) {
-                        const incomingRequestsData = await incomingRequestsResponse.json();
-                        setIncomingRequests(incomingRequestsData);
-                    } else {
-                        console.error("Failed to fetch incoming requests.");
-                        setIncomingRequests([]);
-                    }
-                } else {
-                    setIncomingRequests([]);
-                }
+                // if (parsedLoggedInUser && isCurrentUserProfile) {
+                //     // const incomingRequestsResponse = await fetch(`${BASEURL}/api/users/${parsedLoggedInUser}/requests`);
+                //     const incomingRequestsResponse = await fetch(`${BASEURL}/api/users/friend-request/check?senderId=&receiverId=`);
+                //     if (incomingRequestsResponse.ok) {
+                //         const incomingRequestsData = await incomingRequestsResponse.json();
+                //         setIncomingRequests(incomingRequestsData);
+                //     } else {
+                //         console.error("Failed to fetch incoming requests.");
+                //         setIncomingRequests([]);
+                //     }
+                // } else {
+                //     setIncomingRequests([]);
+                // }
 
             } catch (err) {
                 setError(err.message);
@@ -212,7 +216,9 @@ const Profile = () => {
                     headers: loggedInUser ? { 'loggedInUserId': loggedInUser } : {}
                 });
                 if (updatedProfileResponse.ok) {
-                    const updatedProfileData = await updatedProfileResponse.json();
+                    const updatedProfileData =[];
+                    updatedProfileData= await updatedProfileResponse.json();
+                    updatedProfileData.sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
                     setProfile(updatedProfileData);
                 }
                 closeEditModal();
@@ -260,7 +266,7 @@ const Profile = () => {
         }
         try {
             const response = await fetch(
-                `${BASEURL}/api/users/friend-request/accept?receiverId=${loggedInUser}&senderId=${senderId}`,
+                `${BASEURL}/api/users/friend-request/accept?receiverId=${loggedInUser}&senderId=${profileId}`,
                 { method: 'POST' }
             );
             if (response.ok) {
@@ -308,6 +314,7 @@ const Profile = () => {
                     'Content-Type': 'application/json',
                 },
             });
+            console.log("trying to delete"+postId);
 
             if (response.ok) {
                 console.log(`Post with ID ${postId} deleted successfully.`);
@@ -360,7 +367,7 @@ const Profile = () => {
                         {!isOwnProfile && loggedInUser && (
                             <>
                                 {/* Case 1: Not following, no request sent, no request received -> Show Send Request */}
-                                {!isFollowing && !requestSent && !hasReceivedRequest && (
+                                {!isFollowing && !requestSent && (
                                     <button className="follow-button" onClick={handleFollowRequest}>
                                         Send Request
                                     </button>
@@ -381,8 +388,8 @@ const Profile = () => {
                                 )}
 
                                 {/* If THEY sent a request to US (hasReceivedRequest is true) */}
-                                {!isFollowing && !requestSent && hasReceivedRequest && (
-                                    <button className="accept-button-other" onClick={() => handleAcceptRequest(parseInt(profileId, 10))}>
+                                {!isOwnProfile &&  hasReceivedRequest && (
+                                    <button className="accept-button-other" onClick={() => handleAcceptRequest(profileId)}>
                                         <FontAwesomeIcon icon={faCheck} /> Accept Request
                                     </button>
                                 )}
@@ -421,7 +428,7 @@ const Profile = () => {
 
                 {isOwnProfile && incomingRequests.length > 0 && (
                     <div className="friend-requests">
-                        <h3>Friend Requests</h3>
+                        {/* <h3>Friend Requests</h3> */}
                         <ul>
                             {incomingRequests.map(request => (
                                 <li key={request.userId}>
@@ -434,6 +441,7 @@ const Profile = () => {
                         </ul>
                     </div>
                 )}
+            
 
                 {isEditModalOpen && (
                     <div className="modal">
@@ -470,42 +478,108 @@ const Profile = () => {
                 </div>
 
                 <div className="profile-posts">
-                    {canSeePosts ? (
-                        posts && posts.length > 0 ? (
-                            posts.map((post) => (
-                                <div key={post.postId} className="post-item">
-                                    <div
-                                        className="post-content"
-                                        style={{
-                                            fontFamily: post.fontStyle,
-                                            color: post.textColor,
-                                            backgroundColor: post.backgroundColor,
-                                            fontSize: `${post.fontSize}px`,
-                                        }}
-                                    >
-                                        {post.content}
-                                    </div>
-                                    <small className="post-timestamp">
-                                        {new Date(post.timestamp).toLocaleString()}
-                                    </small>
-                                    {isOwnProfile && (
-                                        <button
-                                            className="delete-post-button"
-                                            onClick={() => handleDeletePost(post.postId)}
-                                            title="Delete Post"
-                                        >
-                                            <FontAwesomeIcon icon={faTrashAlt} />
-                                        </button>
-                                    )}
-                                </div>
-                            ))
-                        ) : (
-                            <p>{profile.username} hasn't posted anything yet.</p>
-                        )
-                    ) : (
-                        <p>You need to follow {profile.username} to see their posts.</p>
-                    )}
-                </div>
+    {canSeePosts ? (
+        posts && posts.length > 0 ? (
+            posts.map((post) => {
+                
+                // ⭐ Same gradient logic as Home & AddPost
+                const gradientBackground =
+                    post.backgroundMode === "dark"
+                        ? `linear-gradient(135deg, ${post.backgroundColor}, ${darkenColor(post.backgroundColor, 40)})`
+                        : `linear-gradient(135deg, ${post.backgroundColor}, ${lightenColor(post.backgroundColor, 40)})`;
+
+                return (
+                    <div
+                        key={post.postId}
+                        className="post-item"
+                        style={{
+                            background: gradientBackground,
+                            borderRadius: "8px",
+                            padding: "10px",
+                            marginBottom: "20px",
+                            boxShadow: "0 3px 6px rgba(0,0,0,0.15)",
+                            position: "relative"
+                        }}
+                    >
+                        {/* ⭐ POST HEADING */}
+                        {post.heading && (
+                            <div
+                                className="post-heading"
+                                style={{
+                                    fontFamily: post.fontStyle,
+                                    color: post.textColor,
+                                    fontSize: `${post.fontSize + 4}px`,
+                                    fontWeight: "bold",
+                                    padding: "8px 10px",
+                                    textAlign: "center",
+                                    borderBottom: `1px solid ${post.textColor}33`
+                                }}
+                            >
+                                {post.heading}
+                            </div>
+                        )}
+
+                        {/* ⭐ POST CONTENT */}
+                        <div
+                            className="post-content"
+                            style={{
+                                fontFamily: post.fontStyle,
+                                color: post.textColor,
+                                fontSize: `${post.fontSize}px`,
+                                padding: "12px 10px",
+                                whiteSpace: "pre-wrap",
+                                textAlign: "center"
+                            }}
+                        >
+                            {post.content}
+                        </div>
+
+                        {/* ⭐ TIMESTAMP */}
+                        <small className="post-timestamp"
+                            style={{
+                                color: post.textColor,
+                                opacity: 0.7,
+                                display: "block",
+                                textAlign: "right",
+                                marginTop: "8px",
+                                fontSize: "0.8em"
+                            }}
+                        >
+                            {new Date(post.timestamp).toLocaleString()}
+                        </small>
+
+                        {/* ⭐ DELETE BUTTON */}
+                        {isOwnProfile && (
+                            <button
+                                className="delete-post-button"
+                                onClick={() => handleDeletePost(post.postId)}
+                                title="Delete Post"
+                                style={{
+                                    position: "absolute",
+                                    top: "10px",
+                                    right: "10px",
+                                    background: "rgba(255,255,255,0.6)",
+                                    border: "none",
+                                    borderRadius: "50%",
+                                    padding: "6px",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faTrashAlt} />
+                            </button>
+                        )}
+                    </div>
+                );
+            })
+        ) : (
+            <p>{profile.username} hasn't posted anything yet.</p>
+        )
+    ) : (
+        <p>You need to follow {profile.username} to see their posts.</p>
+    )}
+</div>
+
+
 
                 <div className="follow-lists">
                     <div className="followers-list">

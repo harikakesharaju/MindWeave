@@ -11,3 +11,27 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* ** The three directives below are mandatory for Tailwind to work. 
+** They are replaced by Tailwind's generated CSS rules during the build process.
+*/
+
+/* 1. Base styles (resets, typography defaults) */
+@tailwind base;
+
+/* 2. Component styles (Tailwind's pre-built components like containers) */
+@tailwind components;
+
+/* 3. Utility classes (all the classes like 'flex', 'p-4', 'bg-blue-500') */
+@tailwind utilities;
+
+/* * Optional: Include a custom font (Inter is often used with Tailwind) 
+* If you want to ensure the 'font-inter' class works, you can define it here 
+* or simply use the font provided by the environment.
+*/
+/*
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+body {
+  font-family: 'Inter', sans-serif;
+}
+*/

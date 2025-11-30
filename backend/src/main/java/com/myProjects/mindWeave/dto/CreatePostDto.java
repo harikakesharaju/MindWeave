@@ -4,11 +4,28 @@ import lombok.Data;
 
 //@Data
 public class CreatePostDto {
-    private String content;
+	public CreatePostDto() {
+		
+	}
+	private String heading;
+    public String getHeading() {
+		return heading;
+	}
+	public void setHeading(String heading) {
+		this.heading = heading;
+	}
+	public String getBackgroundMode() {
+		return backgroundMode;
+	}
+	public void setBackgroundMode(String backgroundMode) {
+		this.backgroundMode = backgroundMode;
+	}
+	private String content;
     private String fontStyle;
     private String textColor;
     private String backgroundColor;
     private Integer fontSize;
+    private String backgroundMode; // "light" or "dark"
 	public String getContent() {
 		return content;
 	}

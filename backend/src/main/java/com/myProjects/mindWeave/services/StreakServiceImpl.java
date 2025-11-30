@@ -1,19 +1,20 @@
 package com.myProjects.mindWeave.services;
 
 import com.myProjects.mindWeave.dto.StreakDto;
-import com.myProjects.mindWeave.entities.Post; // Import Post entity
+import com.myProjects.mindWeave.entities.Post;
 import com.myProjects.mindWeave.entities.Streak;
 import com.myProjects.mindWeave.entities.User;
-import com.myProjects.mindWeave.repositories.PostRepository; // Inject PostRepository
+import com.myProjects.mindWeave.repositories.PostRepository;
 import com.myProjects.mindWeave.repositories.StreakRepository;
 import com.myProjects.mindWeave.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation; // <-- IMPORT THIS
 
 import java.time.LocalDate;
-import java.time.LocalDateTime; // For Post timestamp check
-import java.time.LocalTime; // For Post timestamp check
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ public class StreakServiceImpl implements StreakService {
     private UserRepository userRepository;
 
     @Autowired
-    private PostRepository postRepository; // Inject PostRepository
+    private PostRepository postRepository;
 
     private StreakDto convertToDto(Streak streak) {
         StreakDto dto = new StreakDto();
@@ -45,11 +46,12 @@ public class StreakServiceImpl implements StreakService {
         return (id1 < id2) ? id1 + "-" + id2 : id2 + "-" + id1;
     }
 
-    // This method's primary role will now be to establish a potential new streak or
-    // update the 'lastPostSharedDate' for an existing streak. The actual
-    // streak length increment/reset will be managed by the daily scheduler.
+    /**
+     * Updates the last shared date or creates a new streak record.
+     * Uses Propagation.REQUIRES_NEW to isolate the locking and DB operation.
+     */
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW) // <-- REQUIRED CHANGE
     public void updateStreaksOnNewPost(User poster) {
         LocalDate today = LocalDate.now();
 
@@ -66,13 +68,15 @@ public class StreakServiceImpl implements StreakService {
                     user2 = temp;
                 }
                 String pairKey = generateUserPairKey(user1.getUserId(), user2.getUserId());
+                
+                // The repository call acquires the PESSIMISTIC_WRITE lock here.
                 Optional<Streak> existingStreakOptional = streakRepository.findByUserPairKey(pairKey);
 
                 if (existingStreakOptional.isPresent()) {
                     Streak streak = existingStreakOptional.get();
                     // Just update the lastPostSharedDate to today.
-                    // The streakLength will be managed by the daily scheduler.
                     streak.setLastPostSharedDate(today);
+                    // Lock is released upon commit of this REQUIRES_NEW transaction.
                     streakRepository.save(streak);
                 } else {
                     // Create a new streak, initial length is 1, last shared date is today.
@@ -82,13 +86,14 @@ public class StreakServiceImpl implements StreakService {
                     newStreak.setStreakLength(1); // Initial streak length
                     newStreak.setLastPostSharedDate(today);
                     newStreak.setUserPairKey(pairKey);
+                    // Lock is released upon commit of this REQUIRES_NEW transaction.
                     streakRepository.save(newStreak);
                 }
             }
         }
     }
 
-    // --- New method for daily streak check and update (to be called by scheduler) ---
+    // --- Daily streak check method (usually called by scheduler) ---
     @Transactional
     public void checkAndResetDailyStreaks() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -101,8 +106,6 @@ public class StreakServiceImpl implements StreakService {
             User user1 = streak.getUser1();
             User user2 = streak.getUser2();
 
-            // Only process streaks that were active up to yesterday or before today
-            // If lastPostSharedDate is today, it means someone already posted today and it's already counted for tomorrow's check.
             if (streak.getLastPostSharedDate() == null || streak.getLastPostSharedDate().isBefore(today)) {
 
                 // Check if BOTH users posted yesterday
@@ -121,19 +124,13 @@ public class StreakServiceImpl implements StreakService {
                 streakRepository.save(streak);
             }
         }
-        // After iterating through all streaks and processing for 'yesterday',
-        // we can now check for today for any new posts that might have occurred.
-        // This is handled by `updateStreaksOnNewPost` when a post is made.
-        // The scheduler's role is specifically to process the *previous* day's activity.
     }
 
     // Helper method to check if a user posted on a specific date
     private boolean hasUserPostedOnDay(Long userId, LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX); // Max time of the day
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
-        // Assuming Post has a 'timestamp' field (LocalDateTime) and a 'user' field
-        // You might need to add a method to PostRepository for this.
         return postRepository.existsByUser_UserIdAndTimestampBetween(userId, startOfDay, endOfDay);
     }
 
@@ -150,3 +147,5 @@ public class StreakServiceImpl implements StreakService {
         return null;
     }
 }
+
+//This ensures that when a post is created, the streak update is a rapid, isolated database operation, releasing the lock quickly and preventing the lock wait timeout for subsequent requests.
