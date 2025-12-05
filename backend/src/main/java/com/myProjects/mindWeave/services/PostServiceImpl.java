@@ -1,18 +1,23 @@
 package com.myProjects.mindWeave.services;
 
-import com.myProjects.mindWeave.dto.PostDto;
-import com.myProjects.mindWeave.entities.Post;
-import com.myProjects.mindWeave.entities.User;
-import com.myProjects.mindWeave.repositories.PostRepository;
-import com.myProjects.mindWeave.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.myProjects.mindWeave.dto.PostDto;
+import com.myProjects.mindWeave.dto.ReactionNotificationDto;
+import com.myProjects.mindWeave.entities.Post;
+import com.myProjects.mindWeave.entities.PostReaction;
+//import com.myProjects.mindWeave.entities.ReactionType;
+import com.myProjects.mindWeave.entities.User;
+import com.myProjects.mindWeave.repositories.PostReactionRepository;
+import com.myProjects.mindWeave.repositories.PostRepository;
+import com.myProjects.mindWeave.repositories.UserRepository;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -26,29 +31,58 @@ private PostRepository postRepository;
  @Autowired
  private StreakService streakService; // Inject StreakService
 
+ 
+ @Autowired
+ private PostReactionRepository reactionRepository;
+ 
  // REMOVED: @Autowired private FileStorageService fileStorageService; 
     
     @Autowired // NEW: Inject the AI Image Generation Service
     private AiImageService aiImageService;
 
  // 1. Update convertToDto to include new fields
- private PostDto convertToDto(Post post) {
-  PostDto dto = new PostDto();
-  // ... existing setters ...
-  dto.setPostId(post.getPostId());
-  dto.setHeading(post.getHeading());   // <--- New
-  dto.setImagePath(post.getImagePath());  // <--- New
-  dto.setTimestamp(post.getTimestamp());
-        dto.setContent(post.getContent());
-        dto.setFontStyle(post.getFontStyle());
-        dto.setTextColor(post.getTextColor());
-        dto.setBackgroundColor(post.getBackgroundColor());
-        dto.setFontSize(post.getFontSize());
-        dto.setUserId(post.getUser().getUserId());
-        dto.setUsername(post.getUser().getUsername());
-        dto.setBackgroundMode(post.getBackgroundMode());
-  return dto;
- }
+  
+private PostDto convertToDto(Post post, Long loggedInUserId) {
+    PostDto dto = new PostDto();
+
+    dto.setPostId(post.getPostId());
+    dto.setHeading(post.getHeading());
+    dto.setImagePath(post.getImagePath());
+    dto.setTimestamp(post.getTimestamp());
+    dto.setContent(post.getContent());
+    dto.setFontStyle(post.getFontStyle());
+    dto.setTextColor(post.getTextColor());
+    dto.setBackgroundColor(post.getBackgroundColor());
+    dto.setUserId(post.getUser().getUserId());
+    dto.setUsername(post.getUser().getUsername());
+    dto.setBackgroundMode(post.getBackgroundMode());
+
+    // ✅ counts based on booleans
+    long likeCount = reactionRepository.countByPostAndLikedTrue(post);
+    long dislikeCount = reactionRepository.countByPostAndDislikedTrue(post);
+    dto.setLikeCount(likeCount);
+    dto.setDislikeCount(dislikeCount);
+
+    // ✅ logged-in user's reaction
+    dto.setUserReaction(null); // default
+
+    if (loggedInUserId != null) {
+        userRepository.findById(loggedInUserId).ifPresent(loggedUser -> {
+            reactionRepository.findByPostAndUser(post, loggedUser).ifPresent(userReact -> {
+                if (userReact.isLiked() && userReact.isDisliked()) {
+                    // if you ever allow both simultaneously
+                    dto.setUserReaction("BOTH");
+                } else if (userReact.isLiked()) {
+                    dto.setUserReaction("LIKE");
+                } else if (userReact.isDisliked()) {
+                    dto.setUserReaction("DISLIKE");
+                }
+            });
+        });
+    }
+
+    return dto;
+}
 
  // 2. Update createPost signature and entity setting
  @Override
@@ -61,7 +95,6 @@ private PostRepository postRepository;
   String fontStyle, 
   String textColor, 
   String backgroundColor,
-  Integer fontSize,
 String backgroundMode){
      
   Optional<User> userOptional = userRepository.findById(userId);
@@ -84,7 +117,7 @@ String backgroundMode){
             newPost.setFontStyle(fontStyle);
             newPost.setTextColor(textColor);
             newPost.setBackgroundColor(backgroundColor);
-            newPost.setFontSize(fontSize);
+            newPost.setBackgroundMode(backgroundMode);
 
    Post savedPost = postRepository.save(newPost);
             
@@ -95,22 +128,26 @@ String backgroundMode){
             // Update streak
             streakService.updateStreaksOnNewPost(user);
 
-   return convertToDto(savedPost);
+   return convertToDto(savedPost,userId);
   }
   return null;
  }
 
  @Override
- public PostDto getPostById(Long postId) {
+ public PostDto getPostById(Long postId, Long loggedUserId) {
   Optional<Post> postOptional = postRepository.findById(postId);
-  return postOptional.map(this::convertToDto).orElse(null);
- }
+  return postOptional.map(post -> convertToDto(post, loggedUserId))
+          .orElse(null);
+  }
 
  @Override
- public List<PostDto> getPostsByUser(Long userId) {
-  List<Post> posts = postRepository.findByUser_UserId(userId);
-  return posts.stream().map(this::convertToDto).collect(Collectors.toList());
+ public List<PostDto> getPostsByUser(Long userId, Long loggedUserId) {
+     List<Post> posts = postRepository.findByUser_UserId(userId);
+     return posts.stream()
+             .map(post -> convertToDto(post, loggedUserId))
+             .collect(Collectors.toList());
  }
+
 
  @Override
  @Transactional // Add @Transactional since we might manipulate related entities in future
@@ -132,5 +169,115 @@ String backgroundMode){
  public boolean doesUserExist(Long userId) {
   return userRepository.existsById(userId);
  }
+ 
+ @Override
+ @Transactional
+ public void reactToPost(Long postId, Long userId, String type) {
+     Post post = postRepository.findById(postId)
+             .orElseThrow(() -> new RuntimeException("Post not found: " + postId));
+     User user = userRepository.findById(userId)
+             .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+     PostReaction reaction = reactionRepository
+             .findByPostAndUser(post, user)
+             .orElseGet(() -> {
+                 PostReaction r = new PostReaction();
+                 r.setPost(post);
+                 r.setUser(user);
+                 r.setLiked(false);
+                 r.setDisliked(false);
+                 return r;
+             });
+
+     String t = type.toUpperCase();
+
+     switch (t) {
+         case "LIKE":
+             // ✅ independent: toggle LIKE only
+             reaction.setLiked(!reaction.isLiked());
+             break;
+         case "DISLIKE":
+             // ✅ independent: toggle DISLIKE only
+             reaction.setDisliked(!reaction.isDisliked());
+             break;
+         default:
+             throw new IllegalArgumentException("Invalid reaction type: " + type);
+     }
+
+     // Optional behavior:
+     // - If both booleans are false and reaction existed → delete
+     // - Else save / create
+
+     if (!reaction.isLiked() && !reaction.isDisliked() && reaction.getReactionId() != null) {
+         // nothing selected anymore → delete row
+         reactionRepository.delete(reaction);
+     } else {
+         reactionRepository.save(reaction);
+     }
+ }
+
+
+ @Override
+ @Transactional
+ public void removeReaction(Long postId, Long userId) {
+     Post post = postRepository.findById(postId)
+             .orElseThrow(() -> new RuntimeException("Post not found: " + postId));
+     User user = userRepository.findById(userId)
+             .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+     reactionRepository.findByPostAndUser(post, user)
+             .ifPresent(reactionRepository::delete);
+ }
+ 
+//🆕 1. Implementation for Unread Count
+ @Override
+ public Long getUnreadReactionCount(Long loggedInUserId) {
+     // Uses the new custom query defined in the repository
+     return reactionRepository.countUnreadReactionsForUser(loggedInUserId);
+ }
+
+ // 🆕 2. Implementation for Marking Reactions as Read
+ @Override
+ @Transactional
+ public void updateLastReactionCheckTimestamp(Long loggedInUserId) {
+     userRepository.findById(loggedInUserId).ifPresent(user -> {
+         // Set the user's last check time to the current time
+         user.setLastReactionCheckTimestamp(LocalDateTime.now());
+         userRepository.save(user);
+     });
+ }
+ 
+ @Override
+ public List<ReactionNotificationDto> getUnreadReactionDetails(Long loggedInUserId) {
+     List<PostReaction> unreadReactions = reactionRepository.findUnreadReactionsForUser(loggedInUserId);
+
+     return unreadReactions.stream()
+         .map(reaction -> {
+             String type =null;
+             Boolean liked=reaction.isLiked();
+             Boolean disliked=reaction.isDisliked();
+             if (liked && disliked) {
+                 // 🆕 Handle the "BOTH" case explicitly
+                 type = "BOTH"; 
+             } else if (liked) {
+                 type = "LIKE";
+             } else if (disliked) {
+                 type = "DISLIKE";
+             }
+             if (type == null) return null; // Should not happen based on the query, but safe check
+
+             return new ReactionNotificationDto(
+                 reaction.getPost().getPostId(),
+                 reaction.getPost().getHeading(),
+                 reaction.getUser().getUserId(),
+                 reaction.getUser().getUsername(),
+                 type,
+                 reaction.getTimestamp()
+             );
+         })
+         .filter(dto -> dto != null)
+         .collect(Collectors.toList());
+ }
+
 
 }

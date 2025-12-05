@@ -10,9 +10,14 @@ function Header() {
     const [loggedInUsername, setLoggedInUsername] = useState("");
 
    useEffect(() => {
+
+     const headers = {};
+                if (loggedInUser) {
+                    headers['loggedInUserId'] = loggedInUser;
+                }
         async function fetchUsername() {
             try {
-                const res = await fetch(`http://localhost:9091/api/users/${loggedInUser}`);
+                const res = await fetch(`http://localhost:9091/api/users/${loggedInUser}`,{headers});
                 if(!res.ok){
                     throw new Error(`error occurred while getting username:${res.status}`);
                 }

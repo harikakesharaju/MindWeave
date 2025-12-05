@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEdit, faCheck, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { lightenColor, darkenColor } from "../UtilityMethods";
+import PostCard from "../components/PostCard";
 
 
 const Profile = () => {
@@ -477,140 +478,63 @@ const Profile = () => {
                     <h3>Posts by {profile.username}</h3>
                 </div>
 
-                <div className="profile-posts">
-    {canSeePosts ? (
-        posts && posts.length > 0 ? (
-            posts.map((post) => {
-                
-                // ⭐ Same gradient logic as Home & AddPost
-                const gradientBackground =
-                    post.backgroundMode === "dark"
-                        ? `linear-gradient(135deg, ${post.backgroundColor}, ${darkenColor(post.backgroundColor, 40)})`
-                        : `linear-gradient(135deg, ${post.backgroundColor}, ${lightenColor(post.backgroundColor, 40)})`;
-
-                return (
-                    <div
-                        key={post.postId}
-                        className="post-item"
-                        style={{
-                            background: gradientBackground,
-                            borderRadius: "8px",
-                            padding: "10px",
-                            marginBottom: "20px",
-                            boxShadow: "0 3px 6px rgba(0,0,0,0.15)",
-                            position: "relative"
-                        }}
-                    >
-                        {/* ⭐ POST HEADING */}
-                        {post.heading && (
-                            <div
-                                className="post-heading"
-                                style={{
-                                    fontFamily: post.fontStyle,
-                                    color: post.textColor,
-                                    fontSize: `${post.fontSize + 4}px`,
-                                    fontWeight: "bold",
-                                    padding: "8px 10px",
-                                    textAlign: "center",
-                                    borderBottom: `1px solid ${post.textColor}33`
-                                }}
-                            >
-                                {post.heading}
-                            </div>
-                        )}
-
-                        {/* ⭐ POST CONTENT */}
-                        <div
-                            className="post-content"
-                            style={{
-                                fontFamily: post.fontStyle,
-                                color: post.textColor,
-                                fontSize: `${post.fontSize}px`,
-                                padding: "12px 10px",
-                                whiteSpace: "pre-wrap",
-                                textAlign: "center"
-                            }}
-                        >
-                            {post.content}
-                        </div>
-
-                        {/* ⭐ TIMESTAMP */}
-                        <small className="post-timestamp"
-                            style={{
-                                color: post.textColor,
-                                opacity: 0.7,
-                                display: "block",
-                                textAlign: "right",
-                                marginTop: "8px",
-                                fontSize: "0.8em"
-                            }}
-                        >
-                            {new Date(post.timestamp).toLocaleString()}
-                        </small>
-
-                        {/* ⭐ DELETE BUTTON */}
-                        {isOwnProfile && (
-                            <button
-                                className="delete-post-button"
-                                onClick={() => handleDeletePost(post.postId)}
-                                title="Delete Post"
-                                style={{
-                                    position: "absolute",
-                                    top: "10px",
-                                    right: "10px",
-                                    background: "rgba(255,255,255,0.6)",
-                                    border: "none",
-                                    borderRadius: "50%",
-                                    padding: "6px",
-                                    cursor: "pointer"
-                                }}
-                            >
-                                <FontAwesomeIcon icon={faTrashAlt} />
-                            </button>
-                        )}
-                    </div>
-                );
-            })
-        ) : (
-            <p>{profile.username} hasn't posted anything yet.</p>
-        )
+               <div className="profile-posts">
+  {canSeePosts ? (
+    posts.length > 0 ? (
+      posts.map((post) => (
+        <div key={post.postId} style={{ marginBottom: "25px" }}>
+          <PostCard
+            post={post}
+            canDelete={isOwnProfile}
+            onDelete={handleDeletePost}
+          />
+        </div>
+      ))
     ) : (
-        <p>You need to follow {profile.username} to see their posts.</p>
-    )}
+      <p>{profile.username} hasn't posted anything yet.</p>
+    )
+  ) : (
+    <p>You need to follow {profile.username} to see their posts.</p>
+  )}
+</div>
+
 </div>
 
 
 
-                <div className="follow-lists">
-                    <div className="followers-list">
-                        <h4>Followers</h4>
-                        {followers.length > 0 ? (
-                            <ul>
-                                {followers.map(follower => (
-                                    <li key={follower.userId}>
-                                        <Link to={`/profile/${follower.userId}`}>{follower.username}</Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No followers yet.</p>
-                        )}
-                    </div>
+                 <div className="follow-lists">
+                <div className="followers-list">
+                    <h4>Followers</h4>
+                    {followers.length > 0 ? (
+                        <ul>
+                            {followers.map((follower) => (
+                                <li key={follower.userId}>
+                                    <Link to={`/profile/${follower.userId}`}>
+                                        {follower.username}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No followers yet.</p>
+                    )}
+                </div>
 
-                    <div className="following-list">
-                        <h4>Following</h4>
-                        {following.length > 0 ? (
-                            <ul>
-                                {following.map(followedUser => (
-                                    <li key={followedUser.userId}>
-                                        <Link to={`/profile/${followedUser.userId}`}>{followedUser.username}</Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>Not following anyone yet.</p>
-                        )}
-                    </div>
+                <div className="following-list">
+                    <h4>Following</h4>
+                    {following.length > 0 ? (
+                        <ul>
+                            {following.map((followedUser) => (
+                                <li key={followedUser.userId}>
+                                    <Link to={`/profile/${followedUser.userId}`}>
+                                        {followedUser.username}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>Not following anyone yet.</p>
+                    )}
                 </div>
             </div>
         </>

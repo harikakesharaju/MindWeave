@@ -48,15 +48,14 @@ const AddPost = () => {
   const [fontStyle, setFontStyle] = useState("Inter, sans-serif");
   const [textColor, setTextColor] = useState("#1f2937");
   const [backgroundColor, setBackgroundColor] = useState("#f3f4f6");
-  const [backgroundM,setBackgroundM]  =useState("light");
-  const [fontSize, setFontSize] = useState(16);
+  const [backgroundMode,setBackgroundMode]  =useState("light");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fontOptions = [
     "Arial", "Times New Roman", "Verdana", "Georgia", 
     "Courier New", "Impact", "Inter, sans-serif"
   ];
-  const bgStyle = backgroundM === "light"
+  const bgStyle = backgroundMode === "light"
   ? `linear-gradient(135deg, ${backgroundColor}, ${lightenColor(backgroundColor, 40)})`
   : `linear-gradient(135deg, ${backgroundColor}, ${darkenColor(backgroundColor, 40)})`;
 
@@ -80,7 +79,7 @@ const AddPost = () => {
 
     setIsSubmitting(true);
 
-    const postData = { heading, content, fontStyle, textColor, backgroundColor, fontSize,backgroundM};
+    const postData = { heading, content, fontStyle, textColor, backgroundColor,backgroundMode};
 
     try {
       const response = await fetch(`http://localhost:9091/api/posts/create/${loggedInUser}`, {
@@ -96,7 +95,6 @@ const AddPost = () => {
         setFontStyle("Inter, sans-serif");
         setTextColor("#1f2937");
         setBackgroundColor("#f3f4f6");
-        setFontSize(16);
       } else {
         toast.error("Something went wrong");
       }
@@ -165,22 +163,19 @@ const AddPost = () => {
                 <input type="color" className="color-input" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} />
               </div>
               <div>
-                <select value={backgroundM} onChange={(e) => setBackgroundM(e.target.value)}>
+                <select value={backgroundMode} onChange={(e) => setBackgroundMode(e.target.value)}>
   <option value="light">Light</option>
   <option value="dark">Dark</option>
 </select>
 
                 </div>
-              <div>
-                <label className="small-label">Size ({fontSize}px)</label>
-                <input type="range" min="12" max="32" value={fontSize} className="slider" onChange={(e) => setFontSize(e.target.value)} />
-              </div>
+              
             </div>
 
             {/* Buttons */}
             <div className="button-row">
               <button type="button" className="secondary-btn" onClick={() => {
-                setHeading(""); setContent(""); setFontSize(16);
+                setHeading(""); setContent(""); 
                 setFontStyle("Inter, sans-serif"); setTextColor("#1f2937"); setBackgroundColor("#f3f4f6");
               }}>
                 <Trash2 className="icon-small" /> Discard
@@ -199,7 +194,7 @@ const AddPost = () => {
 
           <div className="preview-box" style={{ background:bgStyle }}>
             <h4 className="preview-heading" style={{ color: textColor }}>{heading || "Preview Heading"}</h4>
-            <div className="preview-content" style={{ fontFamily: fontStyle, color: textColor, fontSize: fontSize }}>
+            <div className="preview-content" style={{ fontFamily: fontStyle, color: textColor }}>
               {formatContentForPreview(content || "Your thought will appear here...")}
             </div>
           </div>

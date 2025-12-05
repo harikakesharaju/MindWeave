@@ -10,10 +10,53 @@ public class PostDto {
     private LocalDateTime timestamp;
     private Long userId; // To identify the creator
     private String username; // Optionally include the username of the creator
-    public String getBackgroundMode() {
+    private Long likeCount;
+    private Long dislikeCount;
+    private String userReaction;
+    
+    
+    public Long getLikeCount() {
+		return likeCount;
+	}
+
+
+
+	public void setLikeCount(Long likeCount) {
+		this.likeCount = likeCount;
+	}
+
+
+
+	public Long getDislikeCount() {
+		return dislikeCount;
+	}
+
+
+
+	public void setDislikeCount(Long dislikeCount) {
+		this.dislikeCount = dislikeCount;
+	}
+
+
+
+	public String getUserReaction() {
+		return userReaction;
+	}
+
+
+
+	public void setUserReaction(String userReaction) {
+		this.userReaction = userReaction;
+	}
+
+
+
+	public String getBackgroundMode() {
 		return backgroundMode;
 	}
 
+    
+    
 	public void setBackgroundMode(String backgroundMode) {
 		this.backgroundMode = backgroundMode;
 	}
@@ -21,7 +64,6 @@ public class PostDto {
 	private String fontStyle;
     private String textColor;
     private String backgroundColor;
-    private Integer fontSize;
     private String heading;
     private String imagePath; // The S3 key/path
     private String backgroundMode; // "light" or "dark"
@@ -46,13 +88,7 @@ public class PostDto {
         return postId;
     }
 
-    public Integer getFontSize() {
-		return fontSize;
-	}
-
-	public void setFontSize(Integer fontSize) {
-		this.fontSize = fontSize;
-	}
+    
 
 	public void setPostId(Long postId) {
         this.postId = postId;

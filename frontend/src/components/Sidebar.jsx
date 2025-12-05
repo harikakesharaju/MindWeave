@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'; // Import useRef
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -6,23 +6,36 @@ import {
     faUser,
     faSearch,
     faPlusSquare,
-    faEnvelope, // New icon for requests
+    faEnvelope, // Used for friend requests
     faTimes, // For closing modal
+    faBell, // 🆕 New icon for Notifications/Reactions
 } from '@fortawesome/free-solid-svg-icons';
-import './Sidebar.css'; // Import the CSS file
+import './Sidebar.css'; 
 
-const BASE_URL = "http://localhost:9091"; // Define base URL here for reuse
+const BASE_URL = "http://localhost:9091";
 
 const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
     const [hoveredItem, setHoveredItem] = useState(null);
-    const loggedInUserId = localStorage.getItem("loggedInUser"); // Use a more descriptive name
+    const loggedInUserId = localStorage.getItem("loggedInUser"); 
+
+    // Friend Request States (Existing)
     const [showRequestsModal, setShowRequestsModal] = useState(false);
     const [pendingRequests, setPendingRequests] = useState([]);
     const [requestsLoading, setRequestsLoading] = useState(false);
     const [requestsError, setRequestsError] = useState(null);
 
-    // Ref for the modal to handle clicks outside
+    // 🆕 New Reactions/Notifications States
+    const [unreadReactionCount, setUnreadReactionCount] = useState(0); 
+    const [showReactionsModal, setShowReactionsModal] = useState(false); 
+    const [unreadReactions, setUnreadReactions] = useState([]); 
+    const [reactionsLoading, setReactionsLoading] = useState(false); 
+    
+
+    // Ref for the Friend Request modal
     const modalRef = useRef(null);
+    // 🆕 Ref for the Reactions modal
+    const reactionsModalRef = useRef(null); 
+
 
     const handleSidebarEnter = () => {
         setOpen(true);
@@ -36,32 +49,70 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
         setHoveredItem(null);
     };
 
-    // Effect to fetch pending requests when modal is opened or component mounts
-    useEffect(() => {
-        if (loggedInUserId) { // Fetch initially and when modal state changes
-            fetchPendingRequests();
-        }
-    }, [loggedInUserId, showRequestsModal]); // Depend on loggedInUserId and showRequestsModal
+    // -----------------------------------------------------------
+    // 🆕 NEW REACTION LOGIC
+    // -----------------------------------------------------------
 
-    // Close modal when clicking outside of it
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                setShowRequestsModal(false);
+    const fetchUnreadReactionCount = async () => {
+        if (!loggedInUserId) return;
+        try {
+            const response = await fetch(`${BASE_URL}/api/posts/reactions/unread/count`, {
+                headers: { 'loggedInUserId': loggedInUserId }
+            });
+            if (response.ok) {
+                const count = await response.json();
+                setUnreadReactionCount(count);
             }
-        };
-
-        if (showRequestsModal) {
-            document.addEventListener('mousedown', handleClickOutside);
-        } else {
-            document.removeEventListener('mousedown', handleClickOutside);
+        } catch (err) {
+            console.error("Error fetching unread reaction count:", err);
         }
+    };
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [showRequestsModal]);
+    const fetchUnreadReactionDetails = async () => {
+        if (!loggedInUserId) return;
+        setReactionsLoading(true);
+        try {
+            const response = await fetch(`${BASE_URL}/api/posts/reactions/unread/details`, {
+                headers: { 'loggedInUserId': loggedInUserId }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setUnreadReactions(data);
+            }
+        } catch (err) {
+            console.error("Error fetching unread reaction details:", err);
+        } finally {
+            setReactionsLoading(false);
+        }
+    };
+    
+    const markReactionsAsRead = async () => {
+        if (!loggedInUserId) return;
+        try {
+            await fetch(`${BASE_URL}/api/posts/reactions/mark-read`, {
+                method: 'POST',
+                headers: { 'loggedInUserId': loggedInUserId }
+            });
+            setUnreadReactionCount(0); // Immediately clear the badge
+        } catch (err) {
+            console.error("Error marking reactions as read:", err);
+        }
+    };
 
+    const handleReactionsModalOpen = () => {
+        fetchUnreadReactionDetails(); // Load details when opening
+        setShowReactionsModal(true);
+    };
+
+    const handleReactionsModalClose = () => {
+        setShowReactionsModal(false);
+        markReactionsAsRead(); // Mark as read when the user closes the modal
+    };
+
+
+    // -----------------------------------------------------------
+    // EXISTING FRIEND REQUEST LOGIC
+    // -----------------------------------------------------------
 
     const fetchPendingRequests = async () => {
         setRequestsLoading(true);
@@ -92,10 +143,7 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
 
             if (response.ok) {
                 console.log(`Accepted request from user ${senderId}`);
-                // Refresh the list of pending requests
                 fetchPendingRequests();
-                // Optionally, give user feedback
-                // alert('Friend request accepted!'); // Consider a less intrusive notification
             } else {
                 const errorText = await response.text();
                 console.error('Failed to accept request:', response.status, errorText);
@@ -107,21 +155,76 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
         }
     };
 
+    // -----------------------------------------------------------
+    // USE EFFECTS
+    // -----------------------------------------------------------
+
+    // Effect to fetch counts/requests on mount/user change
+    useEffect(() => {
+        if (loggedInUserId) { 
+            fetchPendingRequests();
+            fetchUnreadReactionCount(); // 🆕 Fetch the reaction count
+        }
+    }, [loggedInUserId]);
+
+    // Close modal when clicking outside of it (Updated to handle both modals)
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // Check Friend Requests Modal
+            if (showRequestsModal && modalRef.current && !modalRef.current.contains(event.target)) {
+                setShowRequestsModal(false);
+            }
+            // Check Reactions Modal
+            if (showReactionsModal && reactionsModalRef.current && !reactionsModalRef.current.contains(event.target)) {
+                handleReactionsModalClose(); // Use the close handler to mark as read
+            }
+        };
+
+        if (showRequestsModal || showReactionsModal) { 
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showRequestsModal, showReactionsModal]); // Depend on both modal states
+
+
+    // -----------------------------------------------------------
+    // NAVIGATION ITEMS
+    // -----------------------------------------------------------
+    
     const navItems = [
         { path: '/', icon: faHome, text: 'Home' },
         { path: `/profile/${loggedInUserId}`, icon: faUser, text: 'Profile' },
         { path: '/search', icon: faSearch, text: 'Search' },
         { path: '/post/new', icon: faPlusSquare, text: 'Add Post' },
-        // New Friend Requests Item
+        
+        // Existing Friend Requests Item
         {
-            action: () => setShowRequestsModal(true), // Use an action for modal
+            action: () => setShowRequestsModal(true),
             icon: faEnvelope,
             text: 'Requests',
-            isButton: true, // Mark this as a button type item
-            badge: pendingRequests.length // Pass badge count
+            isButton: true,
+            badge: pendingRequests.length
+        },
+        
+        // 🆕 NEW Reactions/Notifications Item
+        {
+            action: handleReactionsModalOpen,
+            icon: faBell, // Using a bell icon for notifications
+            text: 'Notifications',
+            isButton: true,
+            badge: unreadReactionCount 
         },
     ];
 
+    // -----------------------------------------------------------
+    // RENDER
+    // -----------------------------------------------------------
+    
     return (
         <div
             className={`sidebar ${!isOpen ? 'collapsed' : ''}`}
@@ -130,13 +233,12 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
         >
             <nav className="nav-items">
                 {navItems.map((item, index) => {
-                    // Render as a Link or a button based on 'isButton' prop
                     if (item.isButton) {
                         return (
                             <button
                                 key={index}
                                 onClick={item.action}
-                                className="nav-item nav-button" // Add a distinct class for buttons
+                                className="nav-item nav-button"
                                 onMouseEnter={() => handleItemHover(item.text)}
                                 onMouseLeave={handleItemLeave}
                             >
@@ -145,6 +247,7 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
                                     {item.text}
                                 </span>
                                 {item.badge > 0 && (
+                                    // Using the existing badge class for uniformity
                                     <span className="requests-count-badge">{item.badge}</span>
                                 )}
                             </button>
@@ -168,6 +271,7 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
                 })}
             </nav>
 
+            {/* Existing Friend Requests Modal */}
             {showRequestsModal && (
                 <div className="requests-modal-overlay">
                     <div className="requests-modal-content" ref={modalRef}>
@@ -188,7 +292,7 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
                                     <li key={request.userId} className="request-item">
                                         <Link
                                             to={`/profile/${request.userId}`}
-                                            onClick={() => setShowRequestsModal(false)} // Close modal on profile link click
+                                            onClick={() => setShowRequestsModal(false)}
                                             className="request-username-link"
                                         >
                                             {request.username}
@@ -199,6 +303,58 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
                                         >
                                             Accept
                                         </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 🆕 NEW Reactions/Notifications Modal */}
+            {showReactionsModal && (
+                <div className="requests-modal-overlay">
+                    <div className="requests-modal-content" ref={reactionsModalRef}>
+                        <div className="modal-header">
+                            <h3>New Reactions</h3>
+                            <button className="close-modal-button" onClick={handleReactionsModalClose}>
+                                <FontAwesomeIcon icon={faTimes} />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            {reactionsLoading && <p>Loading notifications...</p>}
+                            {!reactionsLoading && unreadReactions.length === 0 && (
+                                <p>No new reactions since your last check.</p>
+                            )}
+                            <ul className="requests-list">
+                                {unreadReactions.map(reaction => (
+                                    <li 
+                                        key={reaction.postId + '-' + reaction.reactingUserId + '-' + reaction.timestamp} 
+                                        className="request-item reaction-item"
+                                    >
+                                        <span style={{ marginRight: '8px' }}>
+                                            {reaction.reactionType === 'LIKE' ? '❤️ Liked' : reaction.reactionType === 'DISLIKE'?'👎 Disliked':'🤯 Conflicted'};
+                                        </span>
+                                        <Link
+                                            to={`/profile/${reaction.reactingUserId}`}
+                                            className="request-username-link"
+                                            onClick={handleReactionsModalClose}
+                                        >
+                                            **{reaction.reactingUsername}**
+                                        </Link>
+                                        <span style={{ margin: '0 5px' }}> your post: </span>
+                                        <Link
+                                            to={`/profile/${loggedInUserId}`}
+                                            className="post-link"
+                                            onClick={handleReactionsModalClose}
+                                            style={{ fontStyle: 'italic', flexGrow: 1, minWidth: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                            title={reaction.postHeading}
+                                        >
+                                            "{reaction.postHeading || "Untitled Post"}"
+                                        </Link>
+                                        <small style={{ marginLeft: 'auto', color: '#888', flexShrink: 0 }}>
+                                            {new Date(reaction.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </small>
                                     </li>
                                 ))}
                             </ul>

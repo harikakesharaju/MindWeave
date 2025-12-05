@@ -1,13 +1,25 @@
 package com.myProjects.mindWeave.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
@@ -67,6 +79,16 @@ public class User {
     @JsonIgnore
     private List<User> requests = new ArrayList<>();
 
+    public LocalDateTime getLastReactionCheckTimestamp() {
+		return lastReactionCheckTimestamp;
+	}
+
+	public void setLastReactionCheckTimestamp(LocalDateTime lastReactionCheckTimestamp) {
+		this.lastReactionCheckTimestamp = lastReactionCheckTimestamp;
+	}
+
+	@Column(name = "last_reaction_check_timestamp", nullable = false)
+    private LocalDateTime lastReactionCheckTimestamp = LocalDateTime.now();
     // Getters and setters...
 
     public Long getUserId() {

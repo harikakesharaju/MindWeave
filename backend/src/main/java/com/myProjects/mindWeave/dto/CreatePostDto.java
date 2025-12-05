@@ -24,7 +24,6 @@ public class CreatePostDto {
     private String fontStyle;
     private String textColor;
     private String backgroundColor;
-    private Integer fontSize;
     private String backgroundMode; // "light" or "dark"
 	public String getContent() {
 		return content;
@@ -50,10 +49,5 @@ public class CreatePostDto {
 	public void setBackgroundColor(String backgroundColor) {
 		this.backgroundColor = backgroundColor;
 	}
-	public Integer getFontSize() {
-		return fontSize;
-	}
-	public void setFontSize(Integer fontSize) {
-		this.fontSize = fontSize;
-	}
+	
 }

@@ -132,3 +132,8 @@
     font-size: 0.9em;
     margin-top: 30px;
 }
+
+.reaction-row div:hover {
+    transform: scale(1.1);
+    transition: 0.2s;
+}

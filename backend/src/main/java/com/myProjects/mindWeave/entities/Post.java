@@ -1,12 +1,23 @@
 package com.myProjects.mindWeave.entities;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "posts")
@@ -43,7 +54,20 @@ public class Post {
 	    private Integer fontSize; // Add this field
 	    private String heading;
 	    private String backgroundMode; // "light" or "dark"
-	    public String getHeading() {
+	    
+	    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	    @JsonIgnore
+	    private List<PostReaction> reactions;
+ 
+	    public List<PostReaction> getReactions() {
+			return reactions;
+		}
+
+		public void setReactions(List<PostReaction> reactions) {
+			this.reactions = reactions;
+		}
+
+		public String getHeading() {
 			return heading;
 		}
 

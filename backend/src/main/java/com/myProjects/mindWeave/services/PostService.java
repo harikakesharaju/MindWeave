@@ -1,8 +1,10 @@
 package com.myProjects.mindWeave.services;
 
-import com.myProjects.mindWeave.dto.PostDto;
-
 import java.util.List;
+
+import com.myProjects.mindWeave.dto.PostDto;
+import com.myProjects.mindWeave.dto.ReactionNotificationDto;
+
 
 public interface PostService {
     PostDto createPost( Long userId,
@@ -12,10 +14,20 @@ public interface PostService {
     		String fontStyle,
     		String textColor,
     		String backgroundColor,
-    		Integer fontSize,
     		String backgroundMode);
-    PostDto getPostById(Long postId);
-    List<PostDto> getPostsByUser(Long userId);
+    PostDto getPostById(Long postId, Long loggedUserId);
+    List<PostDto> getPostsByUser(Long userId, Long loggedUserId);
     void deletePost(Long postId);
     boolean doesUserExist(Long userId); 
+    
+    void reactToPost(Long postId, Long userId, String type);
+    void removeReaction(Long postId, Long userId);
+    
+    Long getUnreadReactionCount(Long loggedInUserId);
+
+    void updateLastReactionCheckTimestamp(Long loggedInUserId);
+    
+    List<ReactionNotificationDto> getUnreadReactionDetails(Long loggedInUserId);
+
+
 }
