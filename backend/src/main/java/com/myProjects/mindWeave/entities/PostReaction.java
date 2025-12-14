@@ -21,9 +21,6 @@ import lombok.NoArgsConstructor;
     name = "post_reactions",
     uniqueConstraints = @UniqueConstraint(columnNames = {"post_id", "user_id"})
 )
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class PostReaction {
    public PostReaction() {}
     public PostReaction(Long reactionId, Post post, User user, boolean liked, boolean disliked) {
@@ -34,6 +31,11 @@ public class PostReaction {
 		this.liked = liked;
 		this.disliked = disliked;
 	}
+    
+    public boolean hasNoReaction() {
+        return !liked && !disliked;
+    }
+
 
 	public Long getReactionId() {
 		return reactionId;

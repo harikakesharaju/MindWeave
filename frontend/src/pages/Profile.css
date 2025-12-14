@@ -13,7 +13,7 @@
     align-items: center;
     padding-bottom: 30px;
     border-bottom: 1px solid #e9ecef;
-    margin-bottom: 30px;
+  
 }
 
 .profile-picture {
@@ -323,4 +323,48 @@
 /* Optional: Default icon styling */
 .default-profile-icon {
     color: #ccc; /* Light grey for default user icon */
+}
+
+.message-button {
+  margin-top: 12px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+
+  /* Modern gradient look */
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  color: #ffffff;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+  transition: all 0.25s ease;
+}
+
+/* Hover effect */
+.message-button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #60a5fa, #1d4ed8);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.5);
+}
+
+/* Active (click) effect */
+.message-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+/* Optional: disabled state (future-proof) */
+.message-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
 }

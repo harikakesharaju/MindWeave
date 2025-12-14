@@ -1,9 +1,11 @@
 package com.myProjects.mindWeave.services;
 
 import java.util.List;
+import java.util.Map;
 
 import com.myProjects.mindWeave.dto.PostDto;
 import com.myProjects.mindWeave.dto.ReactionNotificationDto;
+import com.myProjects.mindWeave.dto.UserDto;
 
 
 public interface PostService {
@@ -28,6 +30,7 @@ public interface PostService {
     void updateLastReactionCheckTimestamp(Long loggedInUserId);
     
     List<ReactionNotificationDto> getUnreadReactionDetails(Long loggedInUserId);
+	Map<String, List<UserDto>> getPostReactions(Long postId);
 
 
 }

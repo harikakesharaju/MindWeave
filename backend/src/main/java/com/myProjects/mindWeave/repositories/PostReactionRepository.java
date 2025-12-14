@@ -34,4 +34,9 @@ public interface PostReactionRepository extends JpaRepository<PostReaction, Long
             "AND (r.liked = true OR r.disliked = true) " +
             "AND r.timestamp > (SELECT u.lastReactionCheckTimestamp FROM User u WHERE u.userId = :loggedInUserId) " +
             "ORDER BY r.timestamp DESC")
-     List<PostReaction> findUnreadReactionsForUser(@Param("loggedInUserId") Long loggedInUserId);}
+     List<PostReaction> findUnreadReactionsForUser(@Param("loggedInUserId") Long loggedInUserId);
+    
+    List<PostReaction> findByPostAndLikedTrue(Post post);
+    List<PostReaction> findByPostAndDislikedTrue(Post post);
+
+}

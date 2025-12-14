@@ -1,7 +1,10 @@
 package com.myProjects.mindWeave.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -11,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.myProjects.mindWeave.dto.PostDto;
 import com.myProjects.mindWeave.dto.ReactionNotificationDto;
+import com.myProjects.mindWeave.dto.UserDto;
 import com.myProjects.mindWeave.entities.Post;
 import com.myProjects.mindWeave.entities.PostReaction;
 //import com.myProjects.mindWeave.entities.ReactionType;
@@ -68,15 +72,10 @@ private PostDto convertToDto(Post post, Long loggedInUserId) {
 
     if (loggedInUserId != null) {
         userRepository.findById(loggedInUserId).ifPresent(loggedUser -> {
-            reactionRepository.findByPostAndUser(post, loggedUser).ifPresent(userReact -> {
-                if (userReact.isLiked() && userReact.isDisliked()) {
-                    // if you ever allow both simultaneously
-                    dto.setUserReaction("BOTH");
-                } else if (userReact.isLiked()) {
-                    dto.setUserReaction("LIKE");
-                } else if (userReact.isDisliked()) {
-                    dto.setUserReaction("DISLIKE");
-                }
+            reactionRepository.findByPostAndUser(post, loggedUser).ifPresent(r -> {
+            	 if (r.isLiked()) dto.setUserReaction("LIKE");
+                 else if (r.isDisliked()) dto.setUserReaction("DISLIKE");
+                 else dto.setUserReaction(null);
             });
         });
     }
@@ -173,11 +172,13 @@ String backgroundMode){
  @Override
  @Transactional
  public void reactToPost(Long postId, Long userId, String type) {
-     Post post = postRepository.findById(postId)
-             .orElseThrow(() -> new RuntimeException("Post not found: " + postId));
-     User user = userRepository.findById(userId)
-             .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
+     Post post = postRepository.findById(postId)
+             .orElseThrow(() -> new RuntimeException("Post not found"));
+     User user = userRepository.findById(userId)
+             .orElseThrow(() -> new RuntimeException("User not found"));
+
+     // Fetch existing reaction
      PostReaction reaction = reactionRepository
              .findByPostAndUser(post, user)
              .orElseGet(() -> {
@@ -192,29 +193,41 @@ String backgroundMode){
      String t = type.toUpperCase();
 
      switch (t) {
+
          case "LIKE":
-             // ✅ independent: toggle LIKE only
-             reaction.setLiked(!reaction.isLiked());
+             if (reaction.isLiked()) {
+                 // User removes LIKE
+                 reaction.setLiked(false);
+             } else {
+                 // User switches DISLIKE -> LIKE
+                 reaction.setLiked(true);
+                 reaction.setDisliked(false);
+             }
              break;
+
          case "DISLIKE":
-             // ✅ independent: toggle DISLIKE only
-             reaction.setDisliked(!reaction.isDisliked());
+             if (reaction.isDisliked()) {
+                 // User removes DISLIKE
+                 reaction.setDisliked(false);
+             } else {
+                 // User switches LIKE -> DISLIKE
+                 reaction.setDisliked(true);
+                 reaction.setLiked(false);
+             }
              break;
+
          default:
              throw new IllegalArgumentException("Invalid reaction type: " + type);
      }
 
-     // Optional behavior:
-     // - If both booleans are false and reaction existed → delete
-     // - Else save / create
-
-     if (!reaction.isLiked() && !reaction.isDisliked() && reaction.getReactionId() != null) {
-         // nothing selected anymore → delete row
+     // If no reaction left → delete row
+     if (reaction.hasNoReaction() && reaction.getReactionId() != null) {
          reactionRepository.delete(reaction);
      } else {
          reactionRepository.save(reaction);
      }
  }
+
 
 
  @Override
@@ -277,6 +290,63 @@ String backgroundMode){
          })
          .filter(dto -> dto != null)
          .collect(Collectors.toList());
+ }
+
+ @Override
+ public Map<String, List<UserDto>> getPostReactions(Long postId) {
+
+     Post post = postRepository.findById(postId)
+             .orElseThrow(() -> new RuntimeException("Post not found"));
+
+     Map<String, List<UserDto>> mp = new HashMap<>();
+
+     List<UserDto> liked = new ArrayList<>();
+     List<UserDto> disliked = new ArrayList<>();
+
+     // Fetch liked users
+     List<PostReaction> likedReactions =
+             reactionRepository.findByPostAndLikedTrue(post);
+
+     for (PostReaction r : likedReactions) {
+         liked.add(convertUserToDto(r.getUser()));
+     }
+
+     // Fetch disliked users
+     List<PostReaction> dislikedReactions =
+             reactionRepository.findByPostAndDislikedTrue(post);
+
+     for (PostReaction r : dislikedReactions) {
+         disliked.add(convertUserToDto(r.getUser()));
+     }
+
+     mp.put("LIKE", liked);
+     mp.put("DISLIKE", disliked);
+
+     return mp;
+ }
+
+ private UserDto convertUserToDto(User user) {
+     UserDto dto = new UserDto();
+     dto.setUserId(user.getUserId());
+     dto.setUsername(user.getUsername());
+     dto.setEmail(user.getEmail());
+     dto.setDescription(user.getDescription());
+     dto.setProfilePictureUrl(user.getProfilePictureUrl());
+
+     if (user.getFollows() != null) {
+         dto.setFollows(
+             user.getFollows().stream()
+                     .map(User::getUserId)
+                     .collect(Collectors.toList()));
+     }
+     if (user.getFollowers() != null) {
+         dto.setFollowers(
+             user.getFollowers().stream()
+                     .map(User::getUserId)
+                     .collect(Collectors.toList()));
+     }
+
+     return dto;
  }
 
 

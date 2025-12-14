@@ -1,6 +1,7 @@
 package com.myProjects.mindWeave.controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.myProjects.mindWeave.dto.CreatePostDto;
 import com.myProjects.mindWeave.dto.PostDto;
 import com.myProjects.mindWeave.dto.ReactionNotificationDto;
+import com.myProjects.mindWeave.dto.UserDto;
 // import com.myProjects.mindWeave.services.FileStorageService; // Removed
 import com.myProjects.mindWeave.services.PostService;
 
@@ -162,5 +164,19 @@ public class PostController {
         List<ReactionNotificationDto> details = postService.getUnreadReactionDetails(loggedInUserId);
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
+    
+    @GetMapping("/{postId}/reactions")
+    public ResponseEntity<Map<String, List<UserDto>>> getPostReactions(
+            @PathVariable Long postId) {
+
+        try {
+            Map<String, List<UserDto>> reactions = postService.getPostReactions(postId);
+            return new ResponseEntity<>(reactions, HttpStatus.OK);
+
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 }
