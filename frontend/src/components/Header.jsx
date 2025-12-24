@@ -17,7 +17,7 @@ function Header() {
                 }
         async function fetchUsername() {
             try {
-                const res = await fetch(`http://localhost:9091/api/users/${loggedInUser}`,{headers});
+                const res = await fetch(`https://mindweave-production-f1b6.up.railway.app/api/users/${loggedInUser}`,{headers});
                 if(!res.ok){
                     throw new Error(`error occurred while getting username:${res.status}`);
                 }

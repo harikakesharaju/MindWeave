@@ -11,7 +11,7 @@ const Registration = ({ onSwitchToLogin }) => {
     const [description, setDescription] = useState('');
     const [profilePictureUrl, setProfilePictureUrl] = useState('');
     // Removed local error/success states as react-toastify will handle visual feedback
-    const API_BASE_URL = 'http://localhost:9091';
+    const API_BASE_URL= "https://mindweave-production-f1b6.up.railway.app";
 
     const handleSubmit = async (event) => {
         event.preventDefault();

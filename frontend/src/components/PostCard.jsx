@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { lightenColor, darkenColor } from "../UtilityMethods";
 
-const BASEURL = "http://localhost:9091";
+const BASEURL = "https://mindweave-production-f1b6.up.railway.app";
 
 const PostCard = ({ post, canDelete = false, onDelete = () => {} }) => {
   const loggedInUser = localStorage.getItem("loggedInUser");

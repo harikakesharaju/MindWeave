@@ -4,7 +4,7 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 
 
-const BASEURL = "http://localhost:9091";
+const BASEURL = "https://mindweave-production-f1b6.up.railway.app";
 
 let stompClient = null;
 

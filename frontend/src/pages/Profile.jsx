@@ -30,7 +30,7 @@ const Profile = () => {
   const [hasReceivedRequest, setHasReceivedRequest] = useState(false);
   const [streakLength, setStreakLength] = useState(null);
 
-  const BASEURL = "http://localhost:9091";
+  const BASEURL = "https://mindweave-production-f1b6.up.railway.app";
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({});

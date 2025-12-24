@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "./Sidebar.css";
 
-const BASE_URL = "http://localhost:9091";
+const BASE_URL = "https://mindweave-production-f1b6.up.railway.app";
 
 const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
   const [hoveredItem, setHoveredItem] = useState(null);
