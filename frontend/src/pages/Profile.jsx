@@ -30,7 +30,7 @@ const Profile = () => {
   const [hasReceivedRequest, setHasReceivedRequest] = useState(false);
   const [streakLength, setStreakLength] = useState(null);
 
-  const BASEURL = "https://mindweave-production-f1b6.up.railway.app";
+  const BASEURL = "http://localhost:9091";
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({});
@@ -162,21 +162,6 @@ const Profile = () => {
           setHasReceivedRequest(false);
           setStreakLength(null); // No streak to show on own profile or if not logged in
         }
-
-        // Fetch incoming friend requests (for display on own profile)
-        // if (parsedLoggedInUser && isCurrentUserProfile) {
-        //     // const incomingRequestsResponse = await fetch(`${BASEURL}/api/users/${parsedLoggedInUser}/requests`);
-        //     const incomingRequestsResponse = await fetch(`${BASEURL}/api/users/friend-request/check?senderId=&receiverId=`);
-        //     if (incomingRequestsResponse.ok) {
-        //         const incomingRequestsData = await incomingRequestsResponse.json();
-        //         setIncomingRequests(incomingRequestsData);
-        //     } else {
-        //         console.error("Failed to fetch incoming requests.");
-        //         setIncomingRequests([]);
-        //     }
-        // } else {
-        //     setIncomingRequests([]);
-        // }
       } catch (err) {
         setError(err.message);
         setProfile(null);
@@ -396,16 +381,23 @@ const Profile = () => {
       <div className="profile-container">
         <div className="profile-header">
           <div className="profile-picture">
-            {profile.profilePictureUrl ? (
-              <img src={profile.profilePictureUrl} alt={profile.username} />
-            ) : (
-              <FontAwesomeIcon
-                icon={faUser}
-                size="3x"
-                className="default-profile-icon"
-              />
-            )}
-          </div>
+          {profile.hasProfileImage ? (
+          <img
+         src={`${BASEURL}/api/users/${profile.userId}/profile-image`}
+         alt={profile.username}
+         onError={(e) => {
+          e.target.style.display = "none";
+          }}
+        />
+      ) : (
+        <FontAwesomeIcon
+        icon={faUser}
+        size="3x"
+        className="default-profile-icon"
+        />
+        )}
+      </div>
+
           <div className="profile-info">
             <h1>{profile.username}</h1>
             <p className="email">{profile.email}</p>

@@ -1,87 +1,93 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Container, Typography, Alert } from '@mui/material';
-import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
-import 'react-toastify/dist/ReactToastify.css'; // Import the CSS for react-toastify
+import { TextField, Button, Container, Typography } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Registration = ({ onSwitchToLogin }) => {
+
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [description, setDescription] = useState('');
-    const [profilePictureUrl, setProfilePictureUrl] = useState('');
-    // Removed local error/success states as react-toastify will handle visual feedback
-    const API_BASE_URL= "https://mindweave-production-f1b6.up.railway.app";
+    const [profileImage, setProfileImage] = useState(null);
+
+    const API_BASE_URL = "http://localhost:9091";
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // Clear any previous toasts
         toast.dismiss();
 
+        if (!profileImage) {
+            toast.error("Profile image is required");
+            return;
+        }
+
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/users/register`, {
+            const formData = new FormData();
+
+            // user JSON object
+            const user = {
                 username,
                 email,
                 password,
-                description,
-                profilePictureUrl,
-            });
+                description
+            };
+
+            formData.append(
+                "user",
+                new Blob([JSON.stringify(user)], { type: "application/json" })
+            );
+
+            // image file
+            formData.append("image", profileImage);
+
+            const response = await axios.post(
+                `${API_BASE_URL}/api/users/register`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            );
 
             if (response.status === 201) {
-                console.log('Registration successful:', response.data);
-                toast.success('Registration successful! Please log in.', {
-                    position: "top-center", // Position toasts centrally for auth forms
+                toast.success("Registration successful! Please log in.", {
+                    position: "top-center",
                     autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "colored",
+                    theme: "colored"
                 });
-                // Delay switching to login to allow user to read the toast
+
                 setTimeout(() => {
                     onSwitchToLogin();
-                }, 1000); // 1 second delay
-            } else {
-                // This else block might be redundant if backend always sends 4xx for failures
-                toast.error('Registration failed. Please try again.', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    theme: "colored",
-                });
+                }, 1000);
             }
-        } catch (error) {
-            console.error('Registration failed:', error.response ? error.response.data : error.message);
-            let errorMessage = 'Registration failed. Please try again.';
 
-            if (error.response) {
-                if (error.response.status === 409) {
-                    errorMessage = error.response.data; // Specific error for conflict (e.g., username/email taken)
-                } else if (error.response.data && typeof error.response.data === 'string') {
-                    errorMessage = error.response.data; // Generic error from backend if not 409
-                } else if (error.response.data && error.response.data.message) {
-                    errorMessage = error.response.data.message; // Spring Boot often returns a 'message' field
-                }
-            } else if (error.message) {
-                errorMessage = `Network error: ${error.message}`;
+        } catch (error) {
+            console.error(error);
+
+            let errorMessage = "Registration failed.";
+
+            if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
             }
 
             toast.error(errorMessage, {
                 position: "top-center",
                 autoClose: 5000,
-                theme: "colored",
+                theme: "colored"
             });
         }
     };
 
     return (
         <Container maxWidth="xs">
-            <ToastContainer /> {/* Add ToastContainer here */}
+            <ToastContainer />
             <Typography variant="h5" component="h2" gutterBottom>
                 Register
             </Typography>
-            {/* Removed local error/success Alerts as Toastify handles it */}
+
             <form onSubmit={handleSubmit}>
                 <TextField
                     label="Username"
@@ -91,6 +97,7 @@ const Registration = ({ onSwitchToLogin }) => {
                     onChange={(e) => setUsername(e.target.value)}
                     required
                 />
+
                 <TextField
                     label="Email"
                     fullWidth
@@ -100,6 +107,7 @@ const Registration = ({ onSwitchToLogin }) => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
+
                 <TextField
                     label="Password"
                     fullWidth
@@ -109,6 +117,7 @@ const Registration = ({ onSwitchToLogin }) => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
+
                 <TextField
                     label="Description (optional)"
                     fullWidth
@@ -118,17 +127,40 @@ const Registration = ({ onSwitchToLogin }) => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />
-                <TextField
-                    label="Profile Picture URL (optional)"
+
+                {/* Image Upload */}
+                <Button
+                    variant="outlined"
+                    component="label"
                     fullWidth
-                    margin="normal"
-                    value={profilePictureUrl}
-                    onChange={(e) => setProfilePictureUrl(e.target.value)}
-                />
-                <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
+                    sx={{ mt: 2 }}
+                >
+                    Upload Profile Image
+                    <input
+                        type="file"
+                        hidden
+                        accept="image/*"
+                        onChange={(e) => setProfileImage(e.target.files[0])}
+                    />
+                </Button>
+
+                {profileImage && (
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                        Selected: {profileImage.name}
+                    </Typography>
+                )}
+
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: 2 }}
+                >
                     Register
                 </Button>
             </form>
+
             <Button onClick={onSwitchToLogin} fullWidth sx={{ mt: 2 }}>
                 Already have an account? Log in
             </Button>

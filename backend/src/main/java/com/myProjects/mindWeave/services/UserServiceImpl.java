@@ -1,18 +1,21 @@
 package com.myProjects.mindWeave.services;
 
-import com.myProjects.mindWeave.dto.UserDto;
-import com.myProjects.mindWeave.entities.User;
-import com.myProjects.mindWeave.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.myProjects.mindWeave.dto.UserDto;
+import com.myProjects.mindWeave.entities.User;
+import com.myProjects.mindWeave.repositories.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,7 +33,8 @@ public class UserServiceImpl implements UserService {
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setDescription(user.getDescription());
-        dto.setProfilePictureUrl(user.getProfilePictureUrl());
+        dto.setHasProfileImage(user.getProfileImage() != null);
+        dto.setProfilePictureUrl("/api/users/" + user.getUserId() + "/profile-image");
         if (user.getFollows() != null) {
             dto.setFollows(user.getFollows().stream().map(User::getUserId).collect(Collectors.toList()));
         }
@@ -40,6 +44,40 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
+    @Transactional
+    @Override
+    public void updateProfileImage(Long userId, MultipartFile image) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        try {
+            user.setProfileImage(image.getBytes());
+            user.setProfileImageType(image.getContentType()); // IMPORTANT
+            userRepository.save(user);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store profile image", e);
+        }
+    }
+
+    @Override
+    public String getProfileImageType(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return user.getProfileImageType();
+    }
+
+    
+    @Override
+    public byte[] getProfileImage(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return user.getProfileImage();
+    }
+
+
+    
     @Override
     public Optional<UserDto> getUserById(Long id) {
         return userRepository.findById(id).map(this::convertToDto);
@@ -94,7 +132,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) {
+    public UserDto createUser(User user,MultipartFile image) {
         // Check for existing username and email
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
@@ -119,8 +157,17 @@ public class UserServiceImpl implements UserService {
         if (!StringUtils.hasText(user.getUsername())) {
             throw new RuntimeException("Username cannot be blank");
         }
+        
+        try {
+            user.setProfileImage(image.getBytes());
+            user.setProfileImageType(image.getContentType());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store profile image");
+        }
 
-        return userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+        return convertToDto(savedUser);
     }
 
     @Override
@@ -193,26 +240,27 @@ public class UserServiceImpl implements UserService {
         Optional<User> existingUserOptional = userRepository.findById(id);
         if (existingUserOptional.isPresent()) {
             User existingUser = existingUserOptional.get();
-            // Update fields if provided in the DTO
+
             if (updatedUserDto.getUsername() != null) {
                 existingUser.setUsername(updatedUserDto.getUsername());
             }
+
             if (updatedUserDto.getEmail() != null) {
                 existingUser.setEmail(updatedUserDto.getEmail());
             }
+
             if (updatedUserDto.getDescription() != null) {
                 existingUser.setDescription(updatedUserDto.getDescription());
             }
-            if (updatedUserDto.getProfilePictureUrl() != null) {
-                existingUser.setProfilePictureUrl(updatedUserDto.getProfilePictureUrl());
-            }
-            // Do not allow updating password here for security reasons
+
+            // DO NOT update profile image here anymore
 
             User updatedUser = userRepository.save(existingUser);
             return Optional.of(convertToDto(updatedUser));
         }
         return Optional.empty();
     }
+
     
     @Override
     public boolean checkIfFriendRequestSent(Long senderId, Long receiverId) {

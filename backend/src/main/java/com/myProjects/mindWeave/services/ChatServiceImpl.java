@@ -68,7 +68,7 @@ public class ChatServiceImpl implements ChatService {
         dto.setChatId(chat.getChatId());
         dto.setOtherUserId(other.getUserId());
         dto.setOtherUsername(other.getUsername());
-        dto.setOtherProfilePictureUrl(other.getProfilePictureUrl());
+        dto.setOtherProfilePictureUrl("/api/users/" + other.getUserId() + "/profile-image");
         return dto;
     }
 
@@ -135,11 +135,12 @@ public class ChatServiceImpl implements ChatService {
                     chat.getChatId(),
                     other.getUserId(),
                     other.getUsername(),
-                    other.getProfilePictureUrl(),
+                    "/api/users/" + other.getUserId() + "/profile-image",
                     lastMsg != null ? lastMsg.getContent() : null,
                     lastMsg != null ? lastMsg.getTimestamp() : null,
                     unread
             ));
+
         }
 
         // Sort by latest message first

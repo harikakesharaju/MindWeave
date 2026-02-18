@@ -14,12 +14,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
@@ -41,12 +40,26 @@ public class User {
 
     private String description;
 
-    private String profilePictureUrl;
+    @Lob
+    @Column(name = "profile_image", columnDefinition = "LONGBLOB")
+    @JsonIgnore
+    private byte[] profileImage;
+    
+    @Column(name = "profile_image_type")
+    private String profileImageType;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
-    @ManyToMany
+    public String getProfileImageType() {
+		return profileImageType;
+	}
+
+	public void setProfileImageType(String profileImageType) {
+		this.profileImageType = profileImageType;
+	}
+
+	@ManyToMany
     @JoinTable(
             name = "user_follows",
             joinColumns = @JoinColumn(name = "follower_id"),
@@ -129,13 +142,6 @@ public class User {
         this.description = description;
     }
 
-    public String getProfilePictureUrl() {
-        return profilePictureUrl;
-    }
-
-    public void setProfilePictureUrl(String profilePictureUrl) {
-        this.profilePictureUrl = profilePictureUrl;
-    }
 
     public List<Post> getPosts() {
         return posts;
@@ -176,4 +182,13 @@ public class User {
     public void setRequests(List<User> requests) {
         this.requests = requests;
     }
+    
+    public byte[] getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(byte[] profileImage) {
+        this.profileImage = profileImage;
+    }
+
 }

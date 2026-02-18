@@ -15,8 +15,19 @@ public class UserDto {
     private List<Long> followers; // List of user IDs that follow this user
     private boolean hasSentRequestTo;
     private boolean hasSentRequestToMe;
+    
+    private boolean hasProfileImage;
 
-    public boolean isHasSentRequestToMe() {
+
+    public boolean isHasProfileImage() {
+		return hasProfileImage;
+	}
+
+	public void setHasProfileImage(boolean hasProfileImage) {
+		this.hasProfileImage = hasProfileImage;
+	}
+
+	public boolean isHasSentRequestToMe() {
         return hasSentRequestToMe;
     }
 

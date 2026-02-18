@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
+import { getCachedProfileImage } from "../utils/profileImageCache";
 
 
-const BASEURL = "https://mindweave-production-f1b6.up.railway.app";
+
+const BASEURL = "http://localhost:9091";
 
 let stompClient = null;
 
@@ -18,6 +20,8 @@ const ChatPage = () => {
   const [input, setInput] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+
 
   const typingTimeoutRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -30,6 +34,21 @@ const ChatPage = () => {
   };
 
   useEffect(scrollToBottom, [messages]);
+
+  useEffect(() => {
+  const loadImage = async () => {
+    if (!otherUser?.userId) return;
+
+    const url = await getCachedProfileImage(
+      otherUser.userId,
+      BASEURL
+    );
+    setAvatarUrl(url);
+  };
+
+  loadImage();
+}, [otherUser]);
+
 
   // 1) Create/Get chat & load history
   useEffect(() => {
@@ -207,77 +226,101 @@ useEffect(() => {
         }}
       >
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "0.75rem",
-            paddingBottom: "0.5rem",
-            borderBottom: "1px solid rgba(148,163,184,0.4)",
-          }}
-        >
-          <div
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: "999px",
-              background:
-                "radial-gradient(circle at 30% 30%, #38bdf8, #1d4ed8)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "1.1rem",
-              marginRight: "0.75rem",
-            }}
-          >
-            {otherUser?.username?.charAt(0)?.toUpperCase() || "U"}
-          </div>
-          <div>
-            <div
-              style={{
-                color: "#e5e7eb",
-                fontWeight: 600,
-                fontSize: "1rem",
-              }}
-            >
-              {otherUser?.username || "User"}
-            </div>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                color: otherTyping ? "#22c55e" : "#9ca3af",
-              }}
-            >
-              {otherTyping ? "Typing..." : "Direct message"}
-            </div>
-          </div>
-          <div style={{ marginLeft: "auto", fontSize: "0.75rem" }}>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                color: isConnected ? "#22c55e" : "#f97316",
-                backgroundColor: "rgba(15,23,42,0.8)",
-                padding: "4px 8px",
-                borderRadius: "999px",
-                border: "1px solid rgba(148,163,184,0.4)",
-              }}
-            >
-              <span
-                style={{
-                  width: 7,
-                  height: 7,
-                  borderRadius: "999px",
-                  backgroundColor: isConnected ? "#22c55e" : "#f97316",
-                }}
-              />
-              {isConnected ? "Connected" : "Connecting..."}
-            </span>
-          </div>
-        </div>
+    
+      {/* Header */}
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "0.75rem",
+    paddingBottom: "0.5rem",
+    borderBottom: "1px solid rgba(148,163,184,0.4)",
+  }}
+>
+  {/* Avatar */}
+  <div
+    style={{
+      width: 42,
+      height: 42,
+      borderRadius: "999px",
+      overflow: "hidden",
+      background:
+        "radial-gradient(circle at 30% 30%, #38bdf8, #1d4ed8)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: "0.75rem",
+      color: "white",
+      fontWeight: "bold",
+    }}
+  >
+    {otherUser?.userId ? (
+     <img src={avatarUrl}
+        alt={otherUser.username}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
+        onError={(e) => {
+          e.target.style.display = "none";
+          e.target.parentElement.innerText =
+            otherUser?.username?.charAt(0)?.toUpperCase() || "U";
+        }}
+      />
+    ) : (
+      otherUser?.username?.charAt(0)?.toUpperCase() || "U"
+    )}
+  </div>
+
+  {/* Username + typing */}
+  <div>
+    <div
+      style={{
+        color: "#e5e7eb",
+        fontWeight: 600,
+        fontSize: "1rem",
+      }}
+    >
+      {otherUser?.username || "User"}
+    </div>
+    <div
+      style={{
+        fontSize: "0.8rem",
+        color: otherTyping ? "#22c55e" : "#9ca3af",
+      }}
+    >
+      {otherTyping ? "Typing..." : "Direct message"}
+    </div>
+  </div>
+
+  {/* Connection badge */}
+  <div style={{ marginLeft: "auto", fontSize: "0.75rem" }}>
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        color: isConnected ? "#22c55e" : "#f97316",
+        backgroundColor: "rgba(15,23,42,0.8)",
+        padding: "4px 8px",
+        borderRadius: "999px",
+        border: "1px solid rgba(148,163,184,0.4)",
+      }}
+    >
+      <span
+        style={{
+          width: 7,
+          height: 7,
+          borderRadius: "999px",
+          backgroundColor: isConnected ? "#22c55e" : "#f97316",
+        }}
+      />
+      {isConnected ? "Connected" : "Connecting..."}
+    </span>
+  </div>
+</div>
+
 
         {/* Messages */}
         <div

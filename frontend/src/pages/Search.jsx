@@ -7,7 +7,7 @@ function Search() {
     const [searchTerm, setSearchTerm] = useState('');
     const [recommendations, setRecommendations] = useState([]);
     const navigate = useNavigate();
-    const BASE_URL = "https://mindweave-production-f1b6.up.railway.app";
+    const BASE_URL = "http://localhost:9091";
 
     const handleSearchChange = async (event) => {
         const term = event.target.value;

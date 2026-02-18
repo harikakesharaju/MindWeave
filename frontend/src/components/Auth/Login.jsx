@@ -10,7 +10,7 @@ const Login = ({ onSwitchToRegister }) => {
     const [password, setPassword] = useState('');
     // Removed local error state
     const navigate = useNavigate();
-    const API_BASE_URL= "https://mindweave-production-f1b6.up.railway.app";
+    const API_BASE_URL= "http://localhost:9091";
 // Ensure this is your backend URL
 
     const handleSubmit = async (event) => {

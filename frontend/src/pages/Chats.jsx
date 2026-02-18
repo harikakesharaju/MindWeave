@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const BASEURL = "https://mindweave-production-f1b6.up.railway.app";
+const BASEURL = "http://localhost:9091";
 
 const Chats = () => {
   const navigate = useNavigate();
@@ -99,24 +99,37 @@ const Chats = () => {
               (e.currentTarget.style.transform = "scale(1)")
             }
           >
-            {/* Avatar */}
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: "999px",
-                background:
-                  "radial-gradient(circle at 30% 30%, #38bdf8, #2563eb)",
-                color: "#020617",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold",
-                fontSize: "1.1rem",
-              }}
-            >
-              {chat.otherUsername?.charAt(0)?.toUpperCase()}
-            </div>
+          {/* Avatar */}
+<div
+  style={{
+    width: 44,
+    height: 44,
+    borderRadius: "999px",
+    overflow: "hidden",
+    background:
+      "radial-gradient(circle at 30% 30%, #38bdf8, #2563eb)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+>
+  <img
+    src={`${BASEURL}/api/users/${chat.otherUserId}/profile-image`}
+    alt={chat.otherUsername}
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+    }}
+    onError={(e) => {
+      // fallback to initials if no image
+      e.target.style.display = "none";
+      e.target.parentElement.innerHTML =
+        chat.otherUsername?.charAt(0)?.toUpperCase() || "?";
+    }}
+  />
+</div>
+
 
             {/* Chat content */}
             <div style={{ flex: 1 }}>

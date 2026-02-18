@@ -13,7 +13,7 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
- const BASEURL = "https://mindweave-production-f1b6.up.railway.app";
+ const BASEURL = "http://localhost:9091";
   const POST_WIDTH = 450;
   const POST_HEIGHT = 220;
 

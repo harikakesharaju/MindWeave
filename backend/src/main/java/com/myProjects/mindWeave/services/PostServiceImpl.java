@@ -331,7 +331,7 @@ String backgroundMode){
      dto.setUsername(user.getUsername());
      dto.setEmail(user.getEmail());
      dto.setDescription(user.getDescription());
-     dto.setProfilePictureUrl(user.getProfilePictureUrl());
+     dto.setHasProfileImage(user.getProfileImage() != null);
 
      if (user.getFollows() != null) {
          dto.setFollows(
