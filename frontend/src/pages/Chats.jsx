@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getCachedProfileImage } from "../utils/profileImageCache";
 
 const BASEURL = "http://localhost:9091";
 
@@ -9,7 +10,7 @@ const Chats = () => {
 
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
-
+const [profileImages, setProfileImages] = useState({});
   useEffect(() => {
     const fetchChats = async () => {
       if (!loggedInUser) return;
@@ -30,6 +31,27 @@ const Chats = () => {
 
     fetchChats();
   }, [loggedInUser]);
+
+  useEffect(() => {
+  const loadImages = async () => {
+    const updatedImages = { ...profileImages };
+
+    for (const chat of chats) {
+      if (!updatedImages[chat.otherUserId]) {
+        const img = await getCachedProfileImage(chat.otherUserId, BASEURL);
+        if (img) {
+          updatedImages[chat.otherUserId] = img;
+        }
+      }
+    }
+
+    setProfileImages(updatedImages);
+  };
+
+  if (chats.length > 0) {
+    loadImages();
+  }
+}, [chats]);
 
   if (loading) {
     return (
@@ -114,7 +136,7 @@ const Chats = () => {
   }}
 >
   <img
-    src={`${BASEURL}/api/users/${chat.otherUserId}/profile-image`}
+    src={profileImages[chat.otherUserId]}
     alt={chat.otherUsername}
     style={{
       width: "100%",

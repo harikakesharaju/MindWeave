@@ -44,6 +44,7 @@ const ChatPage = () => {
       BASEURL
     );
     setAvatarUrl(url);
+    console.log(url);
   };
 
   loadImage();

@@ -12,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { lightenColor, darkenColor } from "../UtilityMethods";
 import PostCard from "../components/PostCard";
+import { getCachedProfileImage } from "../utils/profileImageCache";
 
 const Profile = () => {
   const { userId: profileId } = useParams();
@@ -29,6 +30,7 @@ const Profile = () => {
   const [incomingRequests, setIncomingRequests] = useState([]);
   const [hasReceivedRequest, setHasReceivedRequest] = useState(false);
   const [streakLength, setStreakLength] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
 
   const BASEURL = "http://localhost:9091";
 
@@ -179,6 +181,17 @@ const Profile = () => {
 
     fetchProfileData();
   }, [profileId, loggedInUser, BASEURL]); // Added BASEURL to dependency array for completeness
+
+  useEffect(() => {
+  const loadProfileImage = async () => {
+    if (!profile?.userId || !profile?.hasProfileImage) return;
+
+    const img = await getCachedProfileImage(profile.userId, BASEURL);
+    setProfileImage(img);
+  };
+
+  loadProfileImage();
+}, [profile]);
 
   const openEditModal = () => {
     if (profile) {
@@ -381,22 +394,19 @@ const Profile = () => {
       <div className="profile-container">
         <div className="profile-header">
           <div className="profile-picture">
-          {profile.hasProfileImage ? (
-          <img
-         src={`${BASEURL}/api/users/${profile.userId}/profile-image`}
-         alt={profile.username}
-         onError={(e) => {
-          e.target.style.display = "none";
-          }}
-        />
-      ) : (
-        <FontAwesomeIcon
-        icon={faUser}
-        size="3x"
-        className="default-profile-icon"
-        />
-        )}
-      </div>
+  {profileImage ? (
+    <img
+      src={profileImage}
+      alt={profile.username}
+    />
+  ) : (
+    <FontAwesomeIcon
+      icon={faUser}
+      size="3x"
+      className="default-profile-icon"
+    />
+  )}
+</div>
 
           <div className="profile-info">
             <h1>{profile.username}</h1>
