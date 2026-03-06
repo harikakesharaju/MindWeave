@@ -134,7 +134,7 @@ const Profile = () => {
           );
 
           if (
-            isCurrentUserProfile ||
+            !isCurrentUserProfile ||
             (isFollowing && viewedUserFollowsLoggedIn)
           ) {
             const streakResponse = await fetch(

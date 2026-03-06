@@ -37,12 +37,7 @@ private PostRepository postRepository;
 
  
  @Autowired
- private PostReactionRepository reactionRepository;
- 
- // REMOVED: @Autowired private FileStorageService fileStorageService; 
-    
-    @Autowired // NEW: Inject the AI Image Generation Service
-    private AiImageService aiImageService;
+ private PostReactionRepository reactionRepository;   
 
  // 1. Update convertToDto to include new fields
   
@@ -51,7 +46,6 @@ private PostDto convertToDto(Post post, Long loggedInUserId) {
 
     dto.setPostId(post.getPostId());
     dto.setHeading(post.getHeading());
-    dto.setImagePath(post.getImagePath());
     dto.setTimestamp(post.getTimestamp());
     dto.setContent(post.getContent());
     dto.setFontStyle(post.getFontStyle());
@@ -99,16 +93,9 @@ String backgroundMode){
   Optional<User> userOptional = userRepository.findById(userId);
   if (userOptional.isPresent()) {
    User user = userOptional.get();
-   
-            // --- AI Image Generation Logic ---
-            // Call the AI Service to generate the image URL based on content
-            String generatedImagePath = aiImageService.generatePostImage(heading, content);
-            // --- End AI Image Generation Logic ---
-            
    Post newPost = new Post();
       
    newPost.setHeading(heading);   
-   newPost.setImagePath(generatedImagePath); // <--- Set the AI-generated path
    newPost.setUser(user); // Ensure user is set
    newPost.setTimestamp(LocalDateTime.now());
 
@@ -123,10 +110,6 @@ String backgroundMode){
             // Update user's posts relationship
             user.getPosts().add(savedPost);
             userRepository.save(user);
-
-            // Update streak
-            streakService.updateStreaksOnNewPost(user);
-
    return convertToDto(savedPost,userId);
   }
   return null;

@@ -28,12 +28,6 @@ public class StreakController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
-    
-    @PostMapping("/daily-check")
-    public ResponseEntity<Void> runDailyStreakCheck() {
-        streakService.checkAndResetDailyStreaks();
-        return ResponseEntity.ok().build();
-    }
+
 
 }

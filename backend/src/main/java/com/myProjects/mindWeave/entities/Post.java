@@ -71,16 +71,6 @@ public class Post {
 		public void setHeading(String heading) {
 			this.heading = heading;
 		}
-
-		public String getImagePath() {
-			return imagePath;
-		}
-
-		public void setImagePath(String imagePath) {
-			this.imagePath = imagePath;
-		}
-
-		private String imagePath;
 	    
 	    @PrePersist
 	    protected void onCreate() {

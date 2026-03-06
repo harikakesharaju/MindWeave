@@ -46,84 +46,86 @@ public class StreakServiceImpl implements StreakService {
         return (id1 < id2) ? id1 + "-" + id2 : id2 + "-" + id1;
     }
 
-    /**
-     * Updates the last shared date or creates a new streak record.
-     * Uses Propagation.REQUIRES_NEW to isolate the locking and DB operation.
-     */
-    @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW) // <-- REQUIRED CHANGE
-    public void updateStreaksOnNewPost(User poster) {
-        LocalDate today = LocalDate.now();
-
-        // For all mutual followers, set their lastPostSharedDate for this pair to 'today'
-        for (User follower : poster.getFollowers()) {
-            if (poster.getFollows().contains(follower)) { // Check for mutual follow
-                User user1 = poster;
-                User user2 = follower;
-
-                // Ensure user1 has the smaller ID for consistent pairKey
-                if (user1.getUserId() > user2.getUserId()) {
-                    User temp = user1;
-                    user1 = user2;
-                    user2 = temp;
-                }
-                String pairKey = generateUserPairKey(user1.getUserId(), user2.getUserId());
-                
-                // The repository call acquires the PESSIMISTIC_WRITE lock here.
-                Optional<Streak> existingStreakOptional = streakRepository.findByUserPairKey(pairKey);
-
-                if (existingStreakOptional.isPresent()) {
-                    Streak streak = existingStreakOptional.get();
-                    // Just update the lastPostSharedDate to today.
-                    streak.setLastPostSharedDate(today);
-                    // Lock is released upon commit of this REQUIRES_NEW transaction.
-                    streakRepository.save(streak);
-                } else {
-                    // Create a new streak, initial length is 1, last shared date is today.
-                    Streak newStreak = new Streak();
-                    newStreak.setUser1(user1);
-                    newStreak.setUser2(user2);
-                    newStreak.setStreakLength(1); // Initial streak length
-                    newStreak.setLastPostSharedDate(today);
-                    newStreak.setUserPairKey(pairKey);
-                    // Lock is released upon commit of this REQUIRES_NEW transaction.
-                    streakRepository.save(newStreak);
-                }
-            }
-        }
-    }
-
-    // --- Daily streak check method (usually called by scheduler) ---
     @Transactional
-    public void checkAndResetDailyStreaks() {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        LocalDate today = LocalDate.now();
+    public void resetBrokenStreaks(LocalDate yesterday) {
 
-        // 1. Get all existing streaks
-        List<Streak> allStreaks = streakRepository.findAll();
+        List<Streak> all = streakRepository.findAll();
 
-        for (Streak streak : allStreaks) {
-            User user1 = streak.getUser1();
-            User user2 = streak.getUser2();
+        for (Streak streak : all) {
 
-            if (streak.getLastPostSharedDate() == null || streak.getLastPostSharedDate().isBefore(today)) {
+            boolean user1Posted =
+                    hasUserPostedOnDay(streak.getUser1().getUserId(), yesterday);
 
-                // Check if BOTH users posted yesterday
-                boolean user1PostedYesterday = hasUserPostedOnDay(user1.getUserId(), yesterday);
-                boolean user2PostedYesterday = hasUserPostedOnDay(user2.getUserId(), yesterday);
+            boolean user2Posted =
+                    hasUserPostedOnDay(streak.getUser2().getUserId(), yesterday);
 
-                if (user1PostedYesterday && user2PostedYesterday) {
-                    // Both posted yesterday, increment streak
-                    streak.setStreakLength(streak.getStreakLength() + 1);
-                    streak.setLastPostSharedDate(yesterday); // Update this to yesterday
-                } else {
-                    // If either did not post yesterday, reset the streak
-                    streak.setStreakLength(0); // Reset to 0 as they broke the streak
-                    streak.setLastPostSharedDate(null); // Clear the last shared date
-                }
+            if (!(user1Posted && user2Posted)) {
+
+                streak.setStreakLength(0);
+                streak.setLastPostSharedDate(null);
+
                 streakRepository.save(streak);
             }
         }
+    }
+    
+    @Transactional
+    public void checkAndResetDailyStreaks() {
+
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        LocalDateTime start = yesterday.atStartOfDay();
+        LocalDateTime end = yesterday.atTime(LocalTime.MAX);
+
+        // users who posted yesterday
+        List<Long> activeUsers =
+                postRepository.findDistinctUserIdsByTimestampBetween(start, end);
+
+        for (Long userId : activeUsers) {
+
+            User user = userRepository.findById(userId).orElse(null);
+            if (user == null) continue;
+
+            for (User followed : user.getFollows()) {
+
+                if (!activeUsers.contains(followed.getUserId()))
+                    continue;
+
+                if (!followed.getFollows().contains(user))
+                    continue;
+
+                if (user.getUserId() > followed.getUserId())
+                    continue;
+
+                String pairKey =
+                        generateUserPairKey(user.getUserId(), followed.getUserId());
+
+                Optional<Streak> existing =
+                        streakRepository.findByUserPairKey(pairKey);
+
+                if (existing.isPresent()) {
+
+                    Streak streak = existing.get();
+                    streak.setStreakLength(streak.getStreakLength() + 1);
+                    streak.setLastPostSharedDate(yesterday);
+
+                    streakRepository.save(streak);
+
+                } else {
+
+                    Streak streak = new Streak();
+                    streak.setUser1(user);
+                    streak.setUser2(followed);
+                    streak.setStreakLength(1);
+                    streak.setLastPostSharedDate(yesterday);
+                    streak.setUserPairKey(pairKey);
+
+                    streakRepository.save(streak);
+                }
+            }
+        }
+
+        resetBrokenStreaks(yesterday);
     }
 
     // Helper method to check if a user posted on a specific date
@@ -136,6 +138,7 @@ public class StreakServiceImpl implements StreakService {
 
 
     @Override
+    @Transactional
     public StreakDto getStreakByUserPair(Long user1Id, Long user2Id) {
         Optional<User> user1Optional = userRepository.findById(user1Id);
         Optional<User> user2Optional = userRepository.findById(user2Id);
