@@ -195,6 +195,7 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
       fetchPendingRequests();
       fetchUnreadReactionCount(); // 🆕 Fetch the reaction count
       fetchUnreadMessageCount();
+// eslint-disable-next-line react-hooks/exhaustive-deps
     }
   }, [loggedInUserId]);
 

@@ -30,6 +30,7 @@ const [profileImages, setProfileImages] = useState({});
     };
 
     fetchChats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loggedInUser]);
 
   useEffect(() => {

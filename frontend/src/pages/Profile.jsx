@@ -177,6 +177,7 @@ const Profile = () => {
     };
 
     fetchProfileData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileId, loggedInUser, BASEURL]); // Added BASEURL to dependency array for completeness
 
   useEffect(() => {
