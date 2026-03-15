@@ -6,7 +6,7 @@ import { getCachedProfileImage } from "../utils/profileImageCache";
 
 
 
-const BASEURL = "http://localhost:9091";
+const BASEURL = "https://mindweave-hzwk.onrender.com";
 
 let stompClient = null;
 

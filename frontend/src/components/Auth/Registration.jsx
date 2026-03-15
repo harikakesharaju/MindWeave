@@ -12,7 +12,7 @@ const Registration = ({ onSwitchToLogin }) => {
     const [description, setDescription] = useState('');
     const [profileImage, setProfileImage] = useState(null);
 
-    const API_BASE_URL = "http://localhost:9091";
+    const API_BASE_URL = "https://mindweave-hzwk.onrender.com";
 
     const handleSubmit = async (event) => {
         event.preventDefault();

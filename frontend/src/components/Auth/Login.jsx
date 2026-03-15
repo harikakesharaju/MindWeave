@@ -10,7 +10,7 @@ const Login = ({ onSwitchToRegister }) => {
     const [password, setPassword] = useState('');
     // Removed local error state
     const navigate = useNavigate();
-    const API_BASE_URL= "http://localhost:9091";
+    const API_BASE_URL= "https://mindweave-hzwk.onrender.com";
 // Ensure this is your backend URL
 
     const handleSubmit = async (event) => {

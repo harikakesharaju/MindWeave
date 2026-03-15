@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCachedProfileImage } from "../utils/profileImageCache";
 
-const BASEURL = "http://localhost:9091";
+const BASEURL = "https://mindweave-hzwk.onrender.com";
 
 const Chats = () => {
   const navigate = useNavigate();

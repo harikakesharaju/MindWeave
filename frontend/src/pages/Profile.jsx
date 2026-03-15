@@ -32,7 +32,7 @@ const Profile = () => {
   const [streakLength, setStreakLength] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
 
-  const BASEURL = "http://localhost:9091";
+  const BASEURL = "https://mindweave-hzwk.onrender.com";
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({});
