@@ -11,8 +11,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-chat")
-                .setAllowedOriginPatterns("http://localhost:3000", "http://localhost:5173")
-                .withSockJS();
+        .setAllowedOriginPatterns(
+                "http://localhost:3000",
+                "https://mindweave.vercel.app")
+        .withSockJS();
     }
 
     @Override
