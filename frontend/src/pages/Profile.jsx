@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./Profile.css";
-import Header from "../components/Header";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
   faEdit,
   faCheck,
-  faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { lightenColor, darkenColor } from "../UtilityMethods";
 import PostCard from "../components/PostCard";
 import { getCachedProfileImage } from "../utils/profileImageCache";
 
@@ -236,8 +233,7 @@ const Profile = () => {
           }
         );
         if (updatedProfileResponse.ok) {
-          const updatedProfileData = [];
-          updatedProfileData = await updatedProfileResponse.json();
+          const updatedProfileData = await updatedProfileResponse.json();
           updatedProfileData.sort(
             (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
           );

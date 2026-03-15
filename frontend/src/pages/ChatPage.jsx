@@ -104,7 +104,7 @@ const ChatPage = () => {
 
       client.subscribe(`/topic/chat/${chatId}/typing`, (msg) => {
         const evt = JSON.parse(msg.body);
-        if (evt.senderId != loggedInUser) {
+        if (evt.senderId !== loggedInUser) {
           setOtherTyping(evt.typing);
         }
       });

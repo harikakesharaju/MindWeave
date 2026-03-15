@@ -22,10 +22,6 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
 
-  const handleSidebarEnter = () => {
-    setIsSidebarOpen(true);
-  };
-
   const handleClickOutside = (event) => {
     if (
       isAuthenticated() &&

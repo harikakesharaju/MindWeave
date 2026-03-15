@@ -2,7 +2,7 @@ export const lightenColor = (color, percent) => {
   const num = parseInt(color.replace("#", ""), 16),
         amt = Math.round(2.55 * percent),
         R = (num >> 16) + amt,
-        G = (num >> 8 & 0x00FF) + amt,
+        G = ((num >> 8) & 0x00FF) + amt,
         B = (num & 0x0000FF) + amt;
 
   return "#" + (

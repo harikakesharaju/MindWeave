@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Search.css';
-import Header from '../components/Header';
 
 function Search() {
     const [searchTerm, setSearchTerm] = useState('');

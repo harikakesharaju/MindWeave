@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import homePic from "../images/mindweaveHomePic.jpg";
-import { lightenColor, darkenColor } from "../UtilityMethods"; // ⭐ Added
 import PostCard from "../components/PostCard";
 
 const Home = () => {
@@ -14,13 +11,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
  const BASEURL = "https://mindweave-hzwk.onrender.com";
-  const POST_WIDTH = 450;
-  const POST_HEIGHT = 220;
-
-  const handleLogout = () => {
-    localStorage.clear("loggedInUser");
-    navigate("/auth");
-  };
 
   useEffect(() => {
     const fetchFollowingAndTheirPosts = async () => {
@@ -79,66 +69,6 @@ const Home = () => {
   if (error) {
     return <div className="error">Failed to gather thoughts: {error}</div>;
   }
-
-  const handleReaction = async (postId, type, currentReaction) => {
-    if (!loggedInUser) return;
-
-    try {
-      // If clicking same reaction → remove it
-      if (currentReaction === type) {
-        await fetch(`${BASEURL}/api/posts/${postId}/react/${loggedInUser}`, {
-          method: "DELETE",
-        });
-      } else {
-        // Otherwise apply new reaction
-        await fetch(
-          `${BASEURL}/api/posts/${postId}/react/${loggedInUser}/${type}`,
-          { method: "POST" }
-        );
-      }
-
-      // Refresh posts after reaction
-      setPosts((prev) =>
-        prev.map((p) => {
-          if (p.postId !== postId) return p;
-
-          // Update UI counts
-          let likes = p.likesCount || 0;
-          let dislikes = p.dislikesCount || 0;
-
-          if (currentReaction === type) {
-            // removing reaction
-            if (type === "LIKE") likes--;
-            else dislikes--;
-            return {
-              ...p,
-              likesCount: likes,
-              dislikesCount: dislikes,
-              userReaction: null,
-            };
-          }
-
-          // switching reaction or adding new one
-          if (type === "LIKE") {
-            likes++;
-            if (currentReaction === "DISLIKE") dislikes--;
-          } else {
-            dislikes++;
-            if (currentReaction === "LIKE") likes--;
-          }
-
-          return {
-            ...p,
-            likesCount: likes,
-            dislikesCount: dislikes,
-            userReaction: type,
-          };
-        })
-      );
-    } catch (error) {
-      console.error("Reaction error:", error);
-    }
-  };
 
   return (
     <div
