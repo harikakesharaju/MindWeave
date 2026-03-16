@@ -6,7 +6,7 @@ function Search() {
     const [searchTerm, setSearchTerm] = useState('');
     const [recommendations, setRecommendations] = useState([]);
     const navigate = useNavigate();
-    const BASE_URL = "https://mindweave-hzwk.onrender.com";
+    const BASE_URL = "https://mindweave-o2nz.onrender.com";
 
     const handleSearchChange = async (event) => {
         const term = event.target.value;

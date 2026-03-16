@@ -10,7 +10,7 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
- const BASEURL = "https://mindweave-hzwk.onrender.com";
+ const BASEURL = "https://mindweave-o2nz.onrender.com";
 
   useEffect(() => {
     const fetchFollowingAndTheirPosts = async () => {
