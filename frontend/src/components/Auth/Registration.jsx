@@ -12,7 +12,7 @@ const Registration = ({ onSwitchToLogin }) => {
     const [description, setDescription] = useState('');
     const [profileImage, setProfileImage] = useState(null);
 
-    const API_BASE_URL = "https://mindweave-o2nz.onrender.com";
+    const API_BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
     const handleSubmit = async (event) => {
         event.preventDefault();

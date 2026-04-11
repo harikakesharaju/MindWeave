@@ -6,7 +6,7 @@ function Search() {
     const [searchTerm, setSearchTerm] = useState('');
     const [recommendations, setRecommendations] = useState([]);
     const navigate = useNavigate();
-    const BASE_URL = "https://mindweave-o2nz.onrender.com";
+    const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
     const handleSearchChange = async (event) => {
         const term = event.target.value;

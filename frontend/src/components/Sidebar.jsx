@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "./Sidebar.css";
 
-const BASE_URL = "https://mindweave-o2nz.onrender.com";
+const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
 const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
   const [hoveredItem, setHoveredItem] = useState(null);

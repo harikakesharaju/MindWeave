@@ -70,7 +70,7 @@ const AddPost = () => {
     const postData = { heading, content, fontStyle, textColor, backgroundColor,backgroundMode};
 
     try {
-      const response = await fetch(`https://mindweave-o2nz.onrender.com/api/posts/create/${loggedInUser}`, {
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL || "http://localhost:9091"}/api/posts/create/${loggedInUser}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(postData),

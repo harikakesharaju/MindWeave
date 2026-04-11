@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { lightenColor, darkenColor } from "../UtilityMethods";
 
-const BASEURL = "https://mindweave-o2nz.onrender.com";
+const BASEURL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
 const PostCard = ({ post, canDelete = false, onDelete = () => {} }) => {
   const loggedInUser = localStorage.getItem("loggedInUser");
