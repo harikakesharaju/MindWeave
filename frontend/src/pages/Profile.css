@@ -1,29 +1,35 @@
 /* Profile.css */
 
-/* ── Page background / container ── */
+/* ── Page wrapper ── */
 .profile-container {
   padding: 32px;
   max-width: 900px;
   margin: 32px auto;
   background: rgba(255, 255, 255, 0.96);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(80, 70, 229, 0.10);
-  border: 1px solid rgba(80, 70, 229, 0.07);
+  border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(80, 70, 229, 0.11), 0 0 0 1px rgba(80, 70, 229, 0.06);
+  animation: profileFadeIn 0.28s ease;
 }
 
-/* ── Profile header section ── */
+@keyframes profileFadeIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Profile header ── */
 .profile-header {
   display: flex;
   align-items: flex-start;
   gap: 28px;
   padding-bottom: 28px;
   border-bottom: 1px solid #f1f5f9;
+  flex-wrap: wrap;
 }
 
-/* ── Avatar ── */
+/* ── Avatar ring ── */
 .profile-picture {
-  width: 110px;
-  height: 110px;
+  width: 116px;
+  height: 116px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -31,10 +37,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2.2rem;
+  font-size: 2.4rem;
   color: #5046e5;
-  border: 4px solid #fff;
-  box-shadow: 0 0 0 3px rgba(80, 70, 229, 0.25), 0 6px 20px rgba(0,0,0,0.12);
+  /* Double ring: white gap + brand colour */
+  outline: 4px solid white;
+  box-shadow: 0 0 0 6px rgba(80, 70, 229, 0.22), 0 8px 28px rgba(0, 0, 0, 0.14);
+  transition: box-shadow 0.25s ease;
+}
+
+.profile-picture:hover {
+  box-shadow: 0 0 0 6px rgba(80, 70, 229, 0.38), 0 10px 32px rgba(0, 0, 0, 0.18);
 }
 
 .profile-picture img {
@@ -48,54 +60,72 @@
 }
 
 /* ── Info block ── */
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .profile-info h1 {
   margin: 0 0 4px;
   color: #0f172a;
-  font-size: 1.9rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   font-family: 'Poppins', sans-serif;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
 }
 
 .profile-info .email {
   color: #64748b;
   font-size: 0.875rem;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+  font-weight: 500;
 }
 
 .profile-info .description {
   color: #475569;
   font-size: 0.9rem;
-  margin: 0 0 14px;
-  max-width: 500px;
-  line-height: 1.55;
+  margin: 0 0 16px;
+  max-width: 480px;
+  line-height: 1.6;
 }
 
-/* ── Follow / action buttons ── */
+/* ── Action buttons ── */
+.profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
 .follow-button,
 .edit-profile-button,
-.accept-button-other {
-  padding: 9px 20px;
+.accept-button-other,
+.message-button {
+  padding: 9px 22px;
   border: none;
   border-radius: 10px;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.22s ease;
-  margin-top: 12px;
+  transition: all 0.22s cubic-bezier(0.34, 1.26, 0.64, 1);
   font-family: 'Inter', sans-serif;
   letter-spacing: 0.1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
 }
 
+/* Follow / Following */
 .follow-button {
   background: linear-gradient(135deg, #5046e5, #7c3aed);
   color: white;
-  box-shadow: 0 4px 14px rgba(80, 70, 229, 0.3);
+  box-shadow: 0 4px 16px rgba(80, 70, 229, 0.32);
 }
 
 .follow-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(80, 70, 229, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(80, 70, 229, 0.44);
 }
 
 .follow-button:disabled {
@@ -105,65 +135,54 @@
   cursor: default;
 }
 
+/* Edit profile */
 .edit-profile-button {
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
-  margin-left: 10px;
-  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.28);
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.30);
 }
 
 .edit-profile-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.38);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 22px rgba(34, 197, 94, 0.42);
 }
 
+/* Accept request */
 .accept-button-other {
   background: linear-gradient(135deg, #38bdf8, #0ea5e9);
   color: white;
-  margin-left: 10px;
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.28);
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.30);
 }
 
 .accept-button-other:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(56, 189, 248, 0.38);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 22px rgba(56, 189, 248, 0.42);
 }
 
+/* Message */
 .message-button {
-  margin-top: 14px;
-  padding: 9px 22px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
   background: linear-gradient(135deg, #38bdf8, #2563eb);
-  color: #ffffff;
-  font-size: 0.875rem;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
-  transition: all 0.22s ease;
+  color: white;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.28);
 }
 
 .message-button:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.42);
   background: linear-gradient(135deg, #60a5fa, #1d4ed8);
-  box-shadow: 0 10px 26px rgba(37, 99, 235, 0.42);
 }
 
 .message-button:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
-/* ── Follow stats ── */
+/* ── Stats row ── */
 .follow-stats {
   display: flex;
-  gap: 24px;
+  gap: 28px;
   margin-top: 18px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .follow-stats div {
@@ -173,65 +192,77 @@
 }
 
 .follow-stats div span {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: #0f172a;
   margin-right: 4px;
+  font-family: 'Poppins', sans-serif;
 }
 
+/* Streak pill */
 .streak {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  padding: 4px 12px;
-  border-radius: 99px;
+  gap: 6px;
+  background: linear-gradient(135deg, #fef9c3, #fde68a);
+  padding: 5px 14px;
+  border-radius: 999px;
   border: 1px solid #fbbf24;
   font-size: 0.8rem !important;
   color: #92400e !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
 }
 
 .streak span {
   color: #b45309 !important;
   font-size: 1rem !important;
-}
-
-/* ── Section heading ── */
-.profile-navigation h3 {
-  border-bottom: 2px solid #f1f5f9;
-  padding-bottom: 12px;
-  margin: 28px 0 18px;
-  color: #0f172a;
-  font-size: 1.1rem;
-  font-weight: 700;
   font-family: 'Poppins', sans-serif;
 }
 
-/* ── Posts grid ── */
+/* ── Section heading ── */
+.profile-navigation {
+  margin-top: 28px;
+}
+
+.profile-navigation h3 {
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 12px;
+  margin: 0 0 18px;
+  color: #0f172a;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.2px;
+}
+
+/* ── Posts section ── */
 .profile-posts {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
   margin-bottom: 28px;
 }
 
 /* ── Followers / Following lists ── */
 .follow-lists {
   display: flex;
-  gap: 24px;
-  margin: 24px 0;
+  gap: 20px;
+  margin: 20px 0 32px;
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
   padding: 0 32px;
+  flex-wrap: wrap;
 }
 
 .followers-list,
 .following-list {
   flex: 1;
+  min-width: 220px;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 4px 18px rgba(80, 70, 229, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(80, 70, 229, 0.09);
   padding: 20px 24px;
   border: 1px solid rgba(80, 70, 229, 0.07);
 }
@@ -239,11 +270,12 @@
 .follow-lists h4 {
   margin: 0 0 14px;
   color: #0f172a;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
   border-bottom: 2px solid #f1f5f9;
   padding-bottom: 10px;
+  letter-spacing: -0.1px;
 }
 
 .follow-lists ul {
@@ -263,15 +295,23 @@
 }
 
 .follow-lists li a {
-  text-decoration: none;
   color: #5046e5;
-  font-weight: 500;
+  font-weight: 600;
   transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .follow-lists li a:hover {
   color: #3730a3;
   text-decoration: underline;
+}
+
+.follow-lists p {
+  color: #94a3b8;
+  font-size: 0.82rem;
+  margin: 0;
 }
 
 /* ── Edit modal ── */
@@ -281,43 +321,50 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(10, 15, 40, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(10, 15, 40, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: mwFadeIn 0.15s ease;
+  animation: fadeIn 0.18s ease;
 }
 
-@keyframes mwFadeIn {
+@keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-.modal-content {
-  background: white;
-  padding: 32px;
-  border-radius: 20px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 560px;
-  animation: mwSlideUp 0.2s ease;
+@keyframes mwSlideUp {
+  from { opacity: 0; transform: translateY(22px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes mwSlideUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
+.modal-content {
+  background: white;
+  padding: 0;
+  border-radius: 24px;
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.22);
+  width: 90%;
+  max-width: 540px;
+  animation: mwSlideUp 0.22s ease;
+  overflow: hidden;
 }
 
 .modal-content h2 {
-  margin: 0 0 20px;
-  padding-bottom: 14px;
-  border-bottom: 2px solid #f1f5f9;
-  color: #0f172a;
-  font-size: 1.4rem;
+  margin: 0;
+  padding: 22px 28px;
+  background: linear-gradient(135deg, #5046e5, #7c3aed);
+  color: white;
+  font-size: 1.2rem;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.2px;
+}
+
+.modal-content form {
+  padding: 24px 28px 28px;
 }
 
 .modal-content div {
@@ -330,13 +377,14 @@
   font-weight: 600;
   font-size: 0.82rem;
   color: #374151;
+  letter-spacing: 0.1px;
 }
 
 .modal-content input[type="text"],
 .modal-content input[type="email"],
 .modal-content textarea {
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border: 1.5px solid #e2e8f0;
   border-radius: 10px;
   font-size: 0.9rem;
@@ -366,14 +414,15 @@
   justify-content: flex-end;
   gap: 12px;
   margin-top: 24px !important;
+  margin-bottom: 0 !important;
 }
 
 .modal-actions button {
-  padding: 10px 22px;
+  padding: 10px 24px;
   border: none;
   border-radius: 10px;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   transition: all 0.2s ease;
@@ -386,22 +435,23 @@
 
 .modal-actions button[type="submit"]:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(80, 70, 229, 0.35);
+  box-shadow: 0 6px 18px rgba(80, 70, 229, 0.38);
 }
 
 .modal-actions button[type="button"] {
   background: #f1f5f9;
-  color: #64748b;
+  color: #475569;
 }
 
 .modal-actions button[type="button"]:hover {
   background: #e2e8f0;
+  color: #0f172a;
 }
 
 /* ── Status messages ── */
 .profile-status-message {
   text-align: center;
-  padding: 60px 20px;
+  padding: 80px 20px;
   color: #64748b;
   font-size: 1rem;
 }
@@ -423,4 +473,45 @@
 
 .delete-post-button:hover {
   color: #dc2626;
+}
+
+/* ── Friend requests section ── */
+.friend-requests {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.friend-requests ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.friend-requests li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.875rem;
+}
+
+.friend-requests .accept-button {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.friend-requests .accept-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.38);
 }

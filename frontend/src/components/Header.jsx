@@ -42,19 +42,15 @@ function Header() {
     return (
         <header className="elegant-header">
             <div className="header-left">
-                <Link to="/" className="logo"> {/* Link to the homepage */}
+                <Link to="/" className="logo">
                     MindWeave
                 </Link>
-                {loggedInUsername && (
-                    <span className="header-caption">
-                        What's on your mind today, {loggedInUsername} ?
-                    </span>
-                )}
-                {!loggedInUsername && (
-                    <span className="header-caption">
-                        What's on your mind today?
-                    </span>
-                )}
+                <div className="header-divider" />
+                <span className="header-caption">
+                    {loggedInUsername
+                        ? `What's on your mind, ${loggedInUsername}?`
+                        : "What's on your mind today?"}
+                </span>
             </div>
             <button className="logout-button" onClick={handleLogout}>
                 <FontAwesomeIcon icon={faSignOutAlt} /> Logout

@@ -3,8 +3,7 @@
 /* ── Outer wrapper ── */
 .addpost-wrapper {
   min-height: 100vh;
-  background: linear-gradient(135deg, #eef2ff, #f5f3ff, #f0f9ff);
-  padding: 36px 20px;
+  padding: 36px 20px 48px;
   display: flex;
   justify-content: center;
   font-family: 'Inter', sans-serif;
@@ -106,13 +105,34 @@
 /* ── Style options grid ── */
 .style-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 16px;
-  background: #eef2ff;
+  background: linear-gradient(135deg, #eef2ff, #f5f3ff);
   padding: 18px;
   border-radius: 14px;
-  border: 1px solid #dbe4ff;
+  border: 1px solid rgba(80, 70, 229, 0.12);
   margin-bottom: 24px;
+}
+
+.style-grid select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.style-grid select:focus {
+  border-color: #5046e5;
+  box-shadow: 0 0 0 3px rgba(80, 70, 229, 0.1);
+  background: white;
 }
 
 .small-label {

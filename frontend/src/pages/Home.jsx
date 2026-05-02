@@ -10,7 +10,7 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
- const BASEURL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
+  const BASEURL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
   useEffect(() => {
     const fetchFollowingAndTheirPosts = async () => {
@@ -27,22 +27,16 @@ const Home = () => {
           `${BASEURL}/api/users/${loggedInUser}/following`
         );
         if (!followingResponse.ok) {
-          throw new Error(
-            `Failed to fetch following: ${followingResponse.status}`
-          );
+          throw new Error(`Failed to fetch following: ${followingResponse.status}`);
         }
 
         const followingData = await followingResponse.json();
-
         const allPosts = [];
+
         for (const followedUser of followingData) {
           const postsResponse = await fetch(
             `${BASEURL}/api/posts/user/${followedUser.userId}`,
-            {
-              headers: {
-                loggedInUserId: loggedInUser,
-              },
-            }
+            { headers: { loggedInUserId: loggedInUser } }
           );
           if (postsResponse.ok) {
             const postsData = await postsResponse.json();
@@ -63,72 +57,43 @@ const Home = () => {
   }, [loggedInUser, navigate]);
 
   if (loading) {
-    return <div className="loading">Weaving your thoughts...</div>;
+    return <div className="home-status loading">Weaving your thoughts…</div>;
   }
 
   if (error) {
-    return <div className="error">Failed to gather thoughts: {error}</div>;
+    return <div className="home-status error">Failed to load feed: {error}</div>;
   }
 
   return (
-    <div
-      className="home-container"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "20px",
-        minHeight: "100vh",
-      }}
-    >
-      {/* TOP IMAGE */}
+    <div className="home-container">
+      {/* Banner */}
       <div className="home-banner">
-        <img src={homePic} alt="MindWeave Home" />
+        <img src={homePic} alt="MindWeave" />
+        <div className="home-banner-overlay">
+          <span className="home-banner-label">Your Feed</span>
+        </div>
       </div>
 
-      {/* MAIN CONTENT */}
-      <main
-        className="home-main-content"
-        style={{
-          maxWidth: "1200px",
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      {/* Feed */}
+      <main className="home-main-content">
         {posts.length > 0 ? (
-          <div
-            className="posts-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))",
-              gap: "25px",
-              width: "100%",
-              marginBottom: "30px",
-            }}
-          >
+          <div className="posts-grid">
             {posts.map((post) => (
               <PostCard key={post.postId} post={post} />
             ))}
           </div>
         ) : (
           <div className="no-posts">
-            No thoughts to weave yet from your network. Start following more minds!
+            <span className="no-posts-icon">🧵</span>
+            <p className="no-posts-title">Your feed is empty</p>
+            <p className="no-posts-sub">
+              Follow more people to see their styled posts here.
+            </p>
           </div>
         )}
       </main>
 
-      <footer
-        className="home-footer"
-        style={{
-          marginTop: "30px",
-          color: "#6c757d",
-          textAlign: "center",
-          padding: "15px 0",
-          fontSize: "0.9em",
-        }}
-      >
+      <footer className="home-footer">
         &copy; {new Date().getFullYear()} MindWeave
       </footer>
     </div>

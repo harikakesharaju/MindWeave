@@ -1,72 +1,113 @@
 /* Header.css */
+
 .elegant-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 28px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 14px rgba(80, 70, 229, 0.08);
+  height: var(--header-h, 64px);
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(80, 70, 229, 0.08);
+  box-shadow: 0 1px 0 rgba(80, 70, 229, 0.05), 0 2px 16px rgba(80, 70, 229, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
+  overflow: hidden;
 }
 
+/* Animated gradient accent line at bottom */
+.elegant-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #5046e5, #7c3aed, #38bdf8, #818cf8, #5046e5);
+  background-size: 300% 100%;
+  animation: headerLine 5s linear infinite;
+}
+
+@keyframes headerLine {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 300% 0%; }
+}
+
+/* ── Left side ── */
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 }
 
 .logo {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #5046e5, #7c3aed);
+  font-size: 1.6rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #5046e5 0%, #7c3aed 60%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-decoration: none;
-  letter-spacing: -0.5px;
-  transition: opacity 0.2s;
+  letter-spacing: -0.6px;
+  transition: opacity 0.2s, transform 0.2s;
+  line-height: 1;
 }
 
 .logo:hover {
-  opacity: 0.85;
+  opacity: 0.82;
+  transform: translateY(-1px);
+}
+
+.header-divider {
+  width: 1px;
+  height: 22px;
+  background: #e2e8f0;
 }
 
 .header-caption {
-  color: #64748b;
-  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
   font-weight: 400;
+  font-style: italic;
   letter-spacing: 0.1px;
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* ── Logout button ── */
 .logout-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 7px;
+  padding: 8px 18px;
   background: #fef2f2;
   color: #ef4444;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  border: 1.5px solid #fecaca;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.1px;
 }
 
 .logout-button:hover {
   background: #fee2e2;
   border-color: #f87171;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.18);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.22);
+}
+
+.logout-button:active {
+  transform: translateY(0);
 }
 
 .logout-button svg {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
 }
