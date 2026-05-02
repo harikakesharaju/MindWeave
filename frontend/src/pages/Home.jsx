@@ -82,25 +82,8 @@ const Home = () => {
       }}
     >
       {/* TOP IMAGE */}
-      <div
-        style={{
-          width: "50%",
-          maxWidth: "600px",
-          marginBottom: "30px",
-          borderRadius: "10px",
-          overflow: "hidden",
-          boxShadow: "2px 3px 3px rgba(124, 192, 237)",
-        }}
-      >
-        <img
-          src={homePic}
-          alt="MindWeave Home"
-          style={{
-            display: "block",
-            width: "100%",
-            height: "auto",
-          }}
-        />
+      <div className="home-banner">
+        <img src={homePic} alt="MindWeave Home" />
       </div>
 
       {/* MAIN CONTENT */}
@@ -130,20 +113,8 @@ const Home = () => {
             ))}
           </div>
         ) : (
-          <div
-            className="no-posts"
-            style={{
-              backgroundColor: "white",
-              padding: "20px",
-              borderRadius: "8px",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              textAlign: "center",
-              fontSize: "1.1em",
-              color: "#444",
-            }}
-          >
-            No thoughts to weave yet from your network. Start following more
-            minds!
+          <div className="no-posts">
+            No thoughts to weave yet from your network. Start following more minds!
           </div>
         )}
       </main>

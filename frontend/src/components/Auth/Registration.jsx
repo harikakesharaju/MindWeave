@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Container, Typography } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Registration = ({ onSwitchToLogin }) => {
-
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,146 +23,124 @@ const Registration = ({ onSwitchToLogin }) => {
 
         try {
             const formData = new FormData();
-
-            // user JSON object
-            const user = {
-                username,
-                email,
-                password,
-                description
-            };
-
+            const user = { username, email, password, description };
             formData.append(
                 "user",
                 new Blob([JSON.stringify(user)], { type: "application/json" })
             );
-
-            // image file
             formData.append("image", profileImage);
 
             const response = await axios.post(
                 `${API_BASE_URL}/api/users/register`,
                 formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data"
-                    }
-                }
+                { headers: { "Content-Type": "multipart/form-data" } }
             );
 
             if (response.status === 201) {
                 toast.success("Registration successful! Please log in.", {
                     position: "top-center",
                     autoClose: 3000,
-                    theme: "colored"
+                    theme: "colored",
                 });
-
-                setTimeout(() => {
-                    onSwitchToLogin();
-                }, 1000);
+                setTimeout(() => onSwitchToLogin(), 1000);
             }
-
         } catch (error) {
             console.error(error);
-
             let errorMessage = "Registration failed.";
-
             if (error.response?.data?.message) {
                 errorMessage = error.response.data.message;
             }
-
             toast.error(errorMessage, {
                 position: "top-center",
                 autoClose: 5000,
-                theme: "colored"
+                theme: "colored",
             });
         }
     };
 
     return (
-        <Container maxWidth="xs">
+        <div className="auth-form-container">
             <ToastContainer />
-            <Typography variant="h5" component="h2" gutterBottom>
-                Register
-            </Typography>
+            <h2 className="auth-form-title">Create account</h2>
+            <p className="auth-form-subtitle">Join MindWeave today — it's free</p>
 
-            <form onSubmit={handleSubmit}>
-                <TextField
-                    label="Username"
-                    fullWidth
-                    margin="normal"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-
-                <TextField
-                    label="Email"
-                    fullWidth
-                    margin="normal"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-
-                <TextField
-                    label="Password"
-                    fullWidth
-                    margin="normal"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-
-                <TextField
-                    label="Description (optional)"
-                    fullWidth
-                    margin="normal"
-                    multiline
-                    rows={2}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-
-                {/* Image Upload */}
-                <Button
-                    variant="outlined"
-                    component="label"
-                    fullWidth
-                    sx={{ mt: 2 }}
-                >
-                    Upload Profile Image
+            <form onSubmit={handleSubmit} className="auth-form">
+                <div className="input-group">
+                    <label htmlFor="reg-username">Username</label>
                     <input
-                        type="file"
-                        hidden
-                        accept="image/*"
-                        onChange={(e) => setProfileImage(e.target.files[0])}
+                        id="reg-username"
+                        type="text"
+                        className="auth-input"
+                        placeholder="your_username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
                     />
-                </Button>
+                </div>
 
-                {profileImage && (
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                        Selected: {profileImage.name}
-                    </Typography>
-                )}
+                <div className="input-group">
+                    <label htmlFor="reg-email">Email</label>
+                    <input
+                        id="reg-email"
+                        type="email"
+                        className="auth-input"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
 
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    sx={{ mt: 2 }}
-                >
-                    Register
-                </Button>
+                <div className="input-group">
+                    <label htmlFor="reg-password">Password</label>
+                    <input
+                        id="reg-password"
+                        type="password"
+                        className="auth-input"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+
+                <div className="input-group">
+                    <label htmlFor="reg-desc">Bio (optional)</label>
+                    <textarea
+                        id="reg-desc"
+                        className="auth-input"
+                        placeholder="Tell us about yourself..."
+                        rows={2}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        style={{ resize: 'none' }}
+                    />
+                </div>
+
+                <div className="input-group">
+                    <label>Profile Photo</label>
+                    <label className="auth-file-label" htmlFor="profile-img-upload">
+                        📷&nbsp;
+                        {profileImage ? profileImage.name : 'Choose a photo'}
+                        <input
+                            id="profile-img-upload"
+                            type="file"
+                            hidden
+                            accept="image/*"
+                            onChange={(e) => setProfileImage(e.target.files[0])}
+                        />
+                    </label>
+                </div>
+
+                <button type="submit" className="auth-submit-btn">
+                    Create Account
+                </button>
             </form>
 
-            <Button onClick={onSwitchToLogin} fullWidth sx={{ mt: 2 }}>
-                Already have an account? Log in
-            </Button>
-        </Container>
+            <button onClick={onSwitchToLogin} className="auth-switch-btn">
+                Already have an account? Sign In
+            </button>
+        </div>
     );
 };
 

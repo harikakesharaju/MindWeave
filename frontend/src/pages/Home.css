@@ -1,139 +1,105 @@
+/* Home.css */
+
 .home-container {
-    font-family: 'Arial', sans-serif;
-    min-height: 100vh;
-    /* background-color: #f4f7f6; Light, airy background */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center content horizontally */
-    padding-top: 60px; /* Space for potential fixed header */
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px 40px;
 }
 
-.home-header {
-    background-color: #8e44ad; /* A vibrant purple */
-    color: white;
-    padding: 20px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 90%; /* Slightly narrower than full width */
-    max-width: 1200px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+/* ── Top banner image ── */
+.home-banner {
+  width: 100%;
+  max-width: 680px;
+  margin-bottom: 32px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(80, 70, 229, 0.16);
+  border: 1px solid rgba(80, 70, 229, 0.08);
 }
 
-.home-header h1 {
-    margin: 0;
-    font-size: 2.5em;
-    font-weight: bold;
-    letter-spacing: 1px;
+.home-banner img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
-.logout-button {
-    background: none;
-    border: 2px solid white;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    display: flex;
-    align-items: center;
-    transition: background-color 0.3s ease;
-}
-
-.logout-button svg {
-    margin-right: 8px;
-}
-
-.logout-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
+/* ── Main feed area ── */
 .home-main-content {
-    width: 90%;
-    max-width: 1200px;
-    flex-grow: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* ── Posts grid ── */
 .posts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Responsive grid */
-    gap: 20px;
-    width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 30px;
 }
 
-.post-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.post-content {
-    flex-grow: 1;
-    overflow: hidden;
-    border-radius: 8px 8px 0 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 15px;
-    box-sizing: border-box;
-}
-
-.post-footer {
-    padding: 10px 15px;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9em;
-    color: #555;
-    border-radius: 0 0 8px 8px;
-}
-
-.post-author {
-    color: #3498db;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.post-author:hover {
-    text-decoration: underline;
-}
-
-.post-timestamp {
-    color: #777;
-}
-
+/* ── Empty state ── */
 .no-posts {
-    font-size: 1.2em;
-    color: #555;
-    margin-top: 30px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 48px 32px;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(80, 70, 229, 0.08);
+  border: 1px solid rgba(80, 70, 229, 0.07);
+  text-align: center;
+  font-size: 1rem;
+  color: #64748b;
+  max-width: 480px;
+  width: 100%;
 }
 
-.loading, .error {
-    font-size: 1.2em;
-    color: #555;
-    margin-top: 30px;
+.no-posts::before {
+  content: '🧵';
+  display: block;
+  font-size: 2.5rem;
+  margin-bottom: 12px;
 }
 
+/* ── Loading / error states ── */
+.loading,
+.error {
+  font-size: 1rem;
+  color: #64748b;
+  margin-top: 60px;
+  text-align: center;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.loading::before {
+  content: '🌀';
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: #ef4444;
+}
+
+/* ── Footer ── */
 .home-footer {
-    text-align: center;
-    padding: 20px 0;
-    color: #777;
-    font-size: 0.9em;
-    margin-top: 30px;
+  text-align: center;
+  padding: 20px 0;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  margin-top: 20px;
 }
 
+/* Post-card hover */
 .reaction-row div:hover {
-    transform: scale(1.1);
-    transition: 0.2s;
+  transform: scale(1.1);
+  transition: 0.2s;
 }

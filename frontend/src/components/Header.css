@@ -1,51 +1,72 @@
-/* components/Header.css */
+/* Header.css */
 .elegant-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px; /* Increased padding for a more spacious feel */
-  background-image: linear-gradient(to  right, #f8f9fa, #aec8f2); /* Clean white background */
-    border-bottom: 1px solid #e0e0e0; /* Light grey border */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 28px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 14px rgba(80, 70, 229, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-left {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .logo {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #3498db; /* A nice primary color */
-    text-decoration: none;
-    margin-right: 20px; /* Space between logo and caption */
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #5046e5, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  transition: opacity 0.2s;
+}
+
+.logo:hover {
+  opacity: 0.85;
 }
 
 .header-caption {
-    color: #555; /* Dark grey caption text */
-    font-size: 1em;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.1px;
 }
 
 .logout-button {
-    background-color: #7badee; /* A distinct color for logout */
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .logout-button:hover {
-    color: white;
-    background-color: #457cdd;
+  background: #fee2e2;
+  border-color: #f87171;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.18);
 }
 
 .logout-button svg {
-    font-size: 0.9em;
+  font-size: 0.875rem;
 }

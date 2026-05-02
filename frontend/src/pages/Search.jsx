@@ -11,7 +11,7 @@ function Search() {
     const handleSearchChange = async (event) => {
         const term = event.target.value;
         setSearchTerm(term);
-        setRecommendations([]); // Clear previous recommendations if input changes
+        setRecommendations([]);
 
         if (term.trim()) {
             try {
@@ -38,45 +38,54 @@ function Search() {
 
     const handleSearchSubmit = (event) => {
         event.preventDefault();
-        // If there's a selected recommendation, navigation happens on click
-        // If not, you might want to handle a direct search (e.g., show a list of results)
         if (recommendations.length === 1) {
             navigate(`/profile/${recommendations[0].userId}`);
         } else if (searchTerm.trim()) {
-            // You might want to navigate to a search results page here instead
             console.log('Performing general search for:', searchTerm);
-            // For now, let's just clear recommendations
             setRecommendations([]);
         }
     };
 
     return (
-        <>
-         {/* <Header/> */}
         <div className="search-container">
-           
-            <h2>Search for Users</h2>
+            <h2 className="search-title">Find People</h2>
+            <p className="search-subtitle">Search by username or email address</p>
+
             <form onSubmit={handleSearchSubmit} className="search-form">
-                <input
-                    type="text"
-                    placeholder="Enter email or username"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    className="search-input"
-                />
+                <div className="search-input-wrapper">
+                    <span className="search-input-icon">🔍</span>
+                    <input
+                        type="text"
+                        placeholder="Enter username or email"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        className="search-input"
+                    />
+                </div>
                 <button type="submit" className="search-button">Search</button>
             </form>
+
             {recommendations.length > 0 && (
                 <ul className="recommendations-list">
                     {recommendations.map(user => (
-                        <li key={user.userId} onClick={() => handleRecommendationClick(user)}>
-                            {user.username} ({user.email})
+                        <li
+                            key={user.userId}
+                            className="recommendation-item"
+                            onClick={() => handleRecommendationClick(user)}
+                        >
+                            <div className="recommendation-avatar">
+                                {user.username?.charAt(0)?.toUpperCase() || '?'}
+                            </div>
+                            <div className="recommendation-info">
+                                <div className="recommendation-username">{user.username}</div>
+                                <div className="recommendation-email">{user.email}</div>
+                            </div>
+                            <span className="recommendation-arrow">›</span>
                         </li>
                     ))}
                 </ul>
             )}
         </div>
-        </>
     );
 }
 
