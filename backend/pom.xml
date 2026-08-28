@@ -44,8 +44,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -58,10 +58,11 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!--<dependency>
+		<dependency>
     <groupId>io.jsonwebtoken</groupId>
     <artifactId>jjwt-api</artifactId>
-    <version>0.11.5</version> </dependency>
+    <version>0.11.5</version>
+</dependency>
 <dependency>
     <groupId>io.jsonwebtoken</groupId>
     <artifactId>jjwt-impl</artifactId>
@@ -73,7 +74,7 @@
     <artifactId>jjwt-jackson</artifactId>
     <version>0.11.5</version>
     <scope>runtime</scope>
-</dependency> -->
+</dependency>
 		<dependency>
     <groupId>org.projectlombok</groupId>
     <artifactId>lombok</artifactId>
@@ -104,11 +105,6 @@
     <artifactId>spring-messaging</artifactId>
 	</dependency>
 
-	<dependency>
- <groupId>org.mariadb.jdbc</groupId>
- <artifactId>mariadb-java-client</artifactId>
- <scope>runtime</scope>
-</dependency>
 
 	</dependencies>
 

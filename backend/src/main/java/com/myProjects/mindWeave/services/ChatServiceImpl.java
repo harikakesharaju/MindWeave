@@ -122,7 +122,7 @@ public class ChatServiceImpl implements ChatService {
 
         for (Chat chat : chats) {
 
-            User other = chat.getUser1().getUserId() == userId
+            User other = chat.getUser1().getUserId().equals(userId)
                     ? chat.getUser2()
                     : chat.getUser1();
 

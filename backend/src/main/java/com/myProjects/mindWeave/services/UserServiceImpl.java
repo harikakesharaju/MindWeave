@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,6 +23,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" +
@@ -94,12 +98,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> authenticateUser(String email, String password) {
+    public Optional<User> authenticateUser(String email, String password) {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            if (user.getPassword().equals(password)) {
-                return Optional.of(convertToDto(user));
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                return Optional.of(user);
             }
         }
         return Optional.empty();
@@ -158,13 +162,14 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Username cannot be blank");
         }
         
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         try {
             user.setProfileImage(image.getBytes());
             user.setProfileImageType(image.getContentType());
         } catch (IOException e) {
             throw new RuntimeException("Failed to store profile image");
         }
-
 
         User savedUser = userRepository.save(user);
         return convertToDto(savedUser);

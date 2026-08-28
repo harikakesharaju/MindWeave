@@ -13,7 +13,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws-chat")
         .setAllowedOriginPatterns(
                 "http://localhost:3000",
-                "https://mindweave.vercel.app")
+                "https://mind-weave-jhhu.vercel.app")
         .withSockJS();
     }
 

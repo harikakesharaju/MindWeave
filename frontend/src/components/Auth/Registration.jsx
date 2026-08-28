@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import BASEURL from '../../config';
 
 const Registration = ({ onSwitchToLogin }) => {
     const [username, setUsername] = useState('');
@@ -10,7 +11,6 @@ const Registration = ({ onSwitchToLogin }) => {
     const [description, setDescription] = useState('');
     const [profileImage, setProfileImage] = useState(null);
 
-    const API_BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -31,7 +31,7 @@ const Registration = ({ onSwitchToLogin }) => {
             formData.append("image", profileImage);
 
             const response = await axios.post(
-                `${API_BASE_URL}/api/users/register`,
+                `${BASEURL}/api/users/register`,
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );

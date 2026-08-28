@@ -4,8 +4,8 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { getCachedProfileImage } from "../utils/profileImageCache";
 import "./ChatPage.css";
-
-const BASEURL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
+import BASEURL from "../config";
+import apiFetch from "../utils/apiFetch";
 
 let stompClient = null;
 
@@ -45,7 +45,7 @@ const ChatPage = () => {
   useEffect(() => {
     const initChat = async () => {
       if (!loggedInUser || !otherUserId) return;
-      const res = await fetch(`${BASEURL}/api/chats/with/${otherUserId}`, {
+      const res = await apiFetch(`/api/chats/with/${otherUserId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +59,7 @@ const ChatPage = () => {
           userId: chatDto.otherUserId,
           username: chatDto.otherUsername,
         });
-        const msgRes = await fetch(`${BASEURL}/api/chats/${chatDto.chatId}/messages`);
+        const msgRes = await apiFetch(`/api/chats/${chatDto.chatId}/messages`);
         if (msgRes.ok) setMessages(await msgRes.json());
       }
     };
@@ -80,7 +80,7 @@ const ChatPage = () => {
         });
         client.subscribe(`/topic/chat/${chatId}/typing`, (msg) => {
           const evt = JSON.parse(msg.body);
-          if (evt.senderId !== loggedInUser) setOtherTyping(evt.typing);
+          if (evt.senderId !== Number(loggedInUser)) setOtherTyping(evt.typing);
         });
       },
       onStompError: (frame) => console.error("Broker error:", frame),
@@ -94,7 +94,7 @@ const ChatPage = () => {
   // 3) Mark as read
   useEffect(() => {
     if (!chatId || !loggedInUser) return;
-    fetch(`${BASEURL}/api/chats/${chatId}/read`, {
+    apiFetch(`/api/chats/${chatId}/read`, {
       method: "POST",
       headers: { loggedInUserId: loggedInUser },
     }).then(() => window.dispatchEvent(new Event("chat-read")));

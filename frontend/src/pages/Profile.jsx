@@ -10,6 +10,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import PostCard from "../components/PostCard";
 import { getCachedProfileImage } from "../utils/profileImageCache";
+import BASEURL from "../config";
+import apiFetch from "../utils/apiFetch";
 
 const Profile = () => {
   const { userId: profileId } = useParams();
@@ -28,8 +30,6 @@ const Profile = () => {
   const [hasReceivedRequest, setHasReceivedRequest] = useState(false);
   const [streakLength, setStreakLength] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
-
-  const BASEURL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({});
@@ -56,8 +56,8 @@ const Profile = () => {
         const isCurrentUserProfile = parsedLoggedInUser === parsedProfileId;
 
         // Fetch Profile
-        const profileResponse = await fetch(
-          `${BASEURL}/api/users/${profileId}`,
+        const profileResponse = await apiFetch(
+          `/api/users/${profileId}`,
           { headers }
         );
         if (!profileResponse.ok) {
@@ -67,8 +67,8 @@ const Profile = () => {
         setProfile(profileData);
 
         // Fetch Followers
-        const followersResponse = await fetch(
-          `${BASEURL}/api/users/${profileId}/followers`
+        const followersResponse = await apiFetch(
+          `/api/users/${profileId}/followers`
         );
         if (followersResponse.ok) {
           const followersData = await followersResponse.json();
@@ -85,8 +85,8 @@ const Profile = () => {
         }
 
         // Fetch Following
-        const followingResponse = await fetch(
-          `${BASEURL}/api/users/${profileId}/following`
+        const followingResponse = await apiFetch(
+          `/api/users/${profileId}/following`
         );
         if (followingResponse.ok) {
           const followingData = await followingResponse.json();
@@ -96,8 +96,8 @@ const Profile = () => {
         }
 
         // Fetch User's Posts
-        const postsResponse = await fetch(
-          `${BASEURL}/api/posts/user/${profileId}`
+        const postsResponse = await apiFetch(
+          `/api/posts/user/${profileId}`
         );
         if (postsResponse.ok) {
           const postsData = await postsResponse.json();
@@ -115,8 +115,8 @@ const Profile = () => {
         // --- Logic for interactions with other profiles (not own profile) ---
         if (parsedLoggedInUser && parsedProfileId !== parsedLoggedInUser) {
           // Check if the viewed user (profileId) has sent a friend request to the logged-in user
-          const checkRequestResponse = await fetch(
-            `${BASEURL}/api/users/friend-request/check?senderId=${parsedProfileId}&receiverId=${parsedLoggedInUser}`
+          const checkRequestResponse = await apiFetch(
+            `/api/users/friend-request/check?senderId=${parsedProfileId}&receiverId=${parsedLoggedInUser}`
           );
           if (checkRequestResponse.ok) {
             const data = await checkRequestResponse.json();
@@ -129,15 +129,15 @@ const Profile = () => {
           // Fetch streak if they both follow each other
           // Ensure profileData.follows is an array of objects with userId
           const viewedUserFollowsLoggedIn = profileData?.follows?.some(
-            (followedUser) => followedUser.userId === parsedLoggedInUser
+            (id) => id === parsedLoggedInUser
           );
 
           if (
             !isCurrentUserProfile ||
             (isFollowing && viewedUserFollowsLoggedIn)
           ) {
-            const streakResponse = await fetch(
-              `${BASEURL}/api/streaks/users/${parsedLoggedInUser}/${parsedProfileId}`
+            const streakResponse = await apiFetch(
+              `/api/streaks/users/${parsedLoggedInUser}/${parsedProfileId}`
             );
             if (streakResponse.ok) {
               const streakData = await streakResponse.json();
@@ -178,7 +178,7 @@ const Profile = () => {
 
     fetchProfileData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileId, loggedInUser, BASEURL]); // Added BASEURL to dependency array for completeness
+  }, [profileId, loggedInUser]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
   const loadProfileImage = async () => {
@@ -220,24 +220,21 @@ const Profile = () => {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${BASEURL}/api/users/${profileId}`, {
+      const response = await apiFetch(`/api/users/${profileId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editFormData),
       });
       if (response.ok) {
         console.log("Profile updated successfully");
-        const updatedProfileResponse = await fetch(
-          `${BASEURL}/api/users/${profileId}`,
+        const updatedProfileResponse = await apiFetch(
+          `/api/users/${profileId}`,
           {
             headers: loggedInUser ? { loggedInUserId: loggedInUser } : {},
           }
         );
         if (updatedProfileResponse.ok) {
           const updatedProfileData = await updatedProfileResponse.json();
-          updatedProfileData.sort(
-            (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-          );
           setProfile(updatedProfileData);
         }
         closeEditModal();
@@ -256,8 +253,8 @@ const Profile = () => {
     }
     setRequestSent(true);
     try {
-      const response = await fetch(
-        `${BASEURL}/api/users/friend-request/send?senderId=${loggedInUser}&receiverId=${profileId}`,
+      const response = await apiFetch(
+        `/api/users/friend-request/send?senderId=${loggedInUser}&receiverId=${profileId}`,
         { method: "POST" }
       );
       if (response.ok) {
@@ -284,8 +281,8 @@ const Profile = () => {
       return;
     }
     try {
-      const response = await fetch(
-        `${BASEURL}/api/users/friend-request/accept?receiverId=${loggedInUser}&senderId=${profileId}`,
+      const response = await apiFetch(
+        `/api/users/friend-request/accept?receiverId=${loggedInUser}&senderId=${profileId}`,
         { method: "POST" }
       );
       if (response.ok) {
@@ -300,8 +297,8 @@ const Profile = () => {
         // Call fetchProfileData() again to re-run the useEffect logic
         // No, just trigger re-render if the profileId is same
         // For this, we just need to update followers and isFollowing state
-        const followersResponse = await fetch(
-          `${BASEURL}/api/users/${profileId}/followers`
+        const followersResponse = await apiFetch(
+          `/api/users/${profileId}/followers`
         );
         if (followersResponse.ok) {
           const followersData = await followersResponse.json();
@@ -336,7 +333,7 @@ const Profile = () => {
       return;
     }
     try {
-      const response = await fetch(`${BASEURL}/api/posts/${postId}`, {
+      const response = await apiFetch(`/api/posts/${postId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

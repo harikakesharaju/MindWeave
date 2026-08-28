@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'; // Import Link
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import './Header.css';
+import apiFetch from '../utils/apiFetch';
 
 function Header() {
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ function Header() {
                 }
         async function fetchUsername() {
             try {
-                const res = await fetch(`${process.env.REACT_APP_BASE_URL || "http://localhost:9091"}/api/users/${loggedInUser}`,{headers});
+                const res = await apiFetch(`/api/users/${loggedInUser}`,{headers});
                 if(!res.ok){
                     throw new Error(`error occurred while getting username:${res.status}`);
                 }
@@ -35,7 +36,8 @@ function Header() {
     }, [loggedInUser]);
 
     const handleLogout = () => {
-        localStorage.clear("loggedInUser");
+        localStorage.removeItem("loggedInUser");
+        localStorage.removeItem("token");
         navigate('/auth');
     };
 

@@ -12,8 +12,7 @@ import {
   faCommentDots,
 } from "@fortawesome/free-solid-svg-icons";
 import "./Sidebar.css";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
+import apiFetch from "../utils/apiFetch";
 
 const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
   const [hoveredItem, setHoveredItem] = useState(null);
@@ -56,8 +55,8 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
   const fetchUnreadReactionCount = async () => {
     if (!loggedInUserId) return;
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/posts/reactions/unread/count`,
+      const response = await apiFetch(
+        `/api/posts/reactions/unread/count`,
         {
           headers: { loggedInUserId: loggedInUserId },
         }
@@ -75,8 +74,8 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
     if (!loggedInUserId) return;
     setReactionsLoading(true);
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/posts/reactions/unread/details`,
+      const response = await apiFetch(
+        `/api/posts/reactions/unread/details`,
         {
           headers: { loggedInUserId: loggedInUserId },
         }
@@ -95,7 +94,7 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
   const markReactionsAsRead = async () => {
     if (!loggedInUserId) return;
     try {
-      await fetch(`${BASE_URL}/api/posts/reactions/mark-read`, {
+      await apiFetch(`/api/posts/reactions/mark-read`, {
         method: "POST",
         headers: { loggedInUserId: loggedInUserId },
       });
@@ -123,8 +122,8 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
     setRequestsLoading(true);
     setRequestsError(null);
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/users/${loggedInUserId}/friend-requests/pending`
+      const response = await apiFetch(
+        `/api/users/${loggedInUserId}/friend-requests/pending`
       );
       if (!response.ok) {
         throw new Error(`Failed to fetch pending requests: ${response.status}`);
@@ -142,8 +141,8 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
   const fetchUnreadMessageCount = async () => {
     if (!loggedInUserId) return;
     try {
-      const res = await fetch(
-        `${BASE_URL}/api/chats/user/${loggedInUserId}/chats`
+      const res = await apiFetch(
+        `/api/chats/user/${loggedInUserId}/chats`
       );
       if (res.ok) {
         const chats = await res.json();
@@ -161,8 +160,8 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
 
   const handleAcceptRequest = async (senderId) => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/users/friend-request/accept?receiverId=${loggedInUserId}&senderId=${senderId}`,
+      const response = await apiFetch(
+        `/api/users/friend-request/accept?receiverId=${loggedInUserId}&senderId=${senderId}`,
         {
           method: "POST",
           headers: {
@@ -423,14 +422,13 @@ const Sidebar = React.forwardRef(({ isOpen, setOpen }, ref) => {
                       {reaction.reactionType === "LIKE"
                         ? "❤️ Liked"
                         : "👎 Disliked"}
-                      ;
                     </span>
                     <Link
                       to={`/profile/${reaction.reactingUserId}`}
                       className="request-username-link"
                       onClick={handleReactionsModalClose}
                     >
-                      **{reaction.reactingUsername}**
+                      <strong>{reaction.reactingUsername}</strong>
                     </Link>
                     <span style={{ margin: "0 5px" }}> your post: </span>
                     <Link

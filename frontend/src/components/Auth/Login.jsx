@@ -3,24 +3,25 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import BASEURL from '../../config';
 
 const Login = ({ onSwitchToRegister }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const API_BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         toast.dismiss();
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/users/login`, {
+            const response = await axios.post(`${BASEURL}/api/users/login`, {
                 email,
                 password,
             });
             const user = response.data;
             console.log('Login successful:', user);
             localStorage.setItem('loggedInUser', user.userId);
+            localStorage.setItem('token', user.token);
 
             toast.success(`Welcome, ${user.username}!`, {
                 position: "top-center",

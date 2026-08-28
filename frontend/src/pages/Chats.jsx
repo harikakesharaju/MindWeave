@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCachedProfileImage } from "../utils/profileImageCache";
 import "./Chats.css";
-
-const BASEURL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
+import BASEURL from "../config";
+import apiFetch from "../utils/apiFetch";
 
 const Chats = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const Chats = () => {
     const fetchChats = async () => {
       if (!loggedInUser) return;
       try {
-        const res = await fetch(`${BASEURL}/api/chats/user/${loggedInUser}/chats`);
+        const res = await apiFetch(`/api/chats/user/${loggedInUser}/chats`);
         if (res.ok) setChats(await res.json());
       } catch (err) {
         console.error("Failed to load chats", err);

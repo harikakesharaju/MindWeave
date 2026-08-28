@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.myProjects.mindWeave.config.JwtUtil;
 import com.myProjects.mindWeave.dto.LoginRequest;
+import com.myProjects.mindWeave.dto.LoginResponse;
 import com.myProjects.mindWeave.dto.UserDto;
 import com.myProjects.mindWeave.entities.User;
 import com.myProjects.mindWeave.services.UserService;
@@ -31,6 +33,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping(
     	    value = "/register",
@@ -45,10 +50,23 @@ public class UserController {
     	}
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> loginUser(@RequestBody LoginRequest loginRequest) {
-        Optional<UserDto> userDtoOptional = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
-        return userDtoOptional.map(userDto -> new ResponseEntity<>(userDto, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
+        Optional<User> userOptional = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User user = userOptional.get();
+        String token = jwtUtil.generateToken(user.getUserId());
+        LoginResponse response = new LoginResponse(
+            user.getUserId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getDescription(),
+            "/api/users/" + user.getUserId() + "/profile-image",
+            user.getProfileImage() != null,
+            token
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     @PostMapping(

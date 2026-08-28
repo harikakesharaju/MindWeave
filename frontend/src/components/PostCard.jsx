@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { lightenColor, darkenColor } from "../UtilityMethods";
 import "./PostCard.css";
-
-const BASEURL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
+import apiFetch from "../utils/apiFetch";
 
 const PostCard = ({ post, canDelete = false, onDelete = () => {} }) => {
   const loggedInUser = localStorage.getItem("loggedInUser");
@@ -18,7 +17,7 @@ const PostCard = ({ post, canDelete = false, onDelete = () => {} }) => {
   const refreshPost = async () => {
     if (!loggedInUser) return;
     try {
-      const res = await fetch(`${BASEURL}/api/posts/${post.postId}`, {
+      const res = await apiFetch(`/api/posts/${post.postId}`, {
         headers: { loggedInUserId: loggedInUser },
       });
       if (res.ok) {
@@ -38,7 +37,7 @@ const PostCard = ({ post, canDelete = false, onDelete = () => {} }) => {
 
   const fetchUsersList = async (type) => {
     try {
-      const res = await fetch(`${BASEURL}/api/posts/${post.postId}/reactions`);
+      const res = await apiFetch(`/api/posts/${post.postId}/reactions`);
       const json = await res.json();
       setModalType(type);
       setModalUsers(type === "LIKE" ? json.LIKE || [] : json.DISLIKE || []);
@@ -52,12 +51,12 @@ const PostCard = ({ post, canDelete = false, onDelete = () => {} }) => {
     if (!loggedInUser) return;
     try {
       if (userReaction === type) {
-        await fetch(`${BASEURL}/api/posts/${post.postId}/react/${loggedInUser}`, {
+        await apiFetch(`/api/posts/${post.postId}/react/${loggedInUser}`, {
           method: "DELETE",
         });
       } else {
-        await fetch(
-          `${BASEURL}/api/posts/${post.postId}/react/${loggedInUser}/${type}`,
+        await apiFetch(
+          `/api/posts/${post.postId}/react/${loggedInUser}/${type}`,
           { method: "POST" }
         );
       }

@@ -233,3 +233,52 @@
   width: 20px;
   height: 20px;
 }
+
+/* ── Character count ── */
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.form-label-row .form-label {
+  margin-bottom: 0;
+}
+
+.char-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #94a3b8;
+  transition: color 0.2s;
+}
+
+.char-count.warn {
+  color: #f59e0b;
+}
+
+.char-count.over {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+/* ── Inline validation ── */
+.form-textarea.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.error-text {
+  font-size: 0.78rem;
+  color: #ef4444;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+/* ── Disabled publish button ── */
+.primary-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

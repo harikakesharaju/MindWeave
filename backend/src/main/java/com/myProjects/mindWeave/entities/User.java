@@ -41,7 +41,7 @@ public class User {
     private String description;
 
     @Lob
-    @Column(name = "profile_image", columnDefinition = "LONGBLOB")
+    @Column(name = "profile_image")
     @JsonIgnore
     private byte[] profileImage;
     

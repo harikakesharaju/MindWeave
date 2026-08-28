@@ -89,7 +89,14 @@ function App() {
                 </PrivateRoute>
               }
             />
-            <Route path="/chat/:otherUserId" element={<ChatPage />} />
+            <Route
+              path="/chat/:otherUserId"
+              element={
+                <PrivateRoute>
+                  <ChatPage />
+                </PrivateRoute>
+              }
+            />
             <Route
               path="/chats"
               element={

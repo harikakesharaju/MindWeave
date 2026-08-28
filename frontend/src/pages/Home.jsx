@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import homePic from "../images/mindweaveHomePic.jpg";
 import PostCard from "../components/PostCard";
+import apiFetch from "../utils/apiFetch";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -10,7 +11,6 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const BASEURL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
   useEffect(() => {
     const fetchFollowingAndTheirPosts = async () => {
@@ -23,8 +23,8 @@ const Home = () => {
           return;
         }
 
-        const followingResponse = await fetch(
-          `${BASEURL}/api/users/${loggedInUser}/following`
+        const followingResponse = await apiFetch(
+          `/api/users/${loggedInUser}/following`
         );
         if (!followingResponse.ok) {
           throw new Error(`Failed to fetch following: ${followingResponse.status}`);
@@ -34,8 +34,8 @@ const Home = () => {
         const allPosts = [];
 
         for (const followedUser of followingData) {
-          const postsResponse = await fetch(
-            `${BASEURL}/api/posts/user/${followedUser.userId}`,
+          const postsResponse = await apiFetch(
+            `/api/posts/user/${followedUser.userId}`,
             { headers: { loggedInUserId: loggedInUser } }
           );
           if (postsResponse.ok) {

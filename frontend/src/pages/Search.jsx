@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Search.css';
+import apiFetch from "../utils/apiFetch";
 
 function Search() {
     const [searchTerm, setSearchTerm] = useState('');
     const [recommendations, setRecommendations] = useState([]);
     const navigate = useNavigate();
-    const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:9091";
 
     const handleSearchChange = async (event) => {
         const term = event.target.value;
@@ -15,7 +15,7 @@ function Search() {
 
         if (term.trim()) {
             try {
-                const response = await fetch(`${BASE_URL}/api/users/search?query=${term}`);
+                const response = await apiFetch(`/api/users/search?query=${term}`);
                 if (response.ok) {
                     const data = await response.json();
                     setRecommendations(data);

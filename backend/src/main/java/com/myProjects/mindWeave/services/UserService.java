@@ -19,7 +19,7 @@ public interface UserService {
     Optional<UserDto> getUserDtoById(Long userId);
 	Optional<UserDto> getUserByUsername(String username);
 	Optional<UserDto> getUserByEmail(String email); 
-    Optional<UserDto> authenticateUser(String email, String password);
+    Optional<User> authenticateUser(String email, String password);
 	List<UserDto> searchUsersByEmailOrUsername(String query);
 	Optional<UserDto> updateUser(Long id, UserDto updatedUserDto);
 	Optional<UserDto> getUserDtoById(Long userId, Long loggedInUserId);

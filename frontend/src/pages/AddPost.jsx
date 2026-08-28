@@ -3,6 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./AddPost.css";   // ⭐ IMPORTANT: CSS file
 import { lightenColor, darkenColor } from "../UtilityMethods";
+import apiFetch from "../utils/apiFetch";
 
 
 // Icons (unchanged)
@@ -33,14 +34,17 @@ const Type = (props) => (
   </svg>
 );
 
+const MAX_CHARS = 500;
+
 const AddPost = () => {
   const [heading, setHeading] = useState("");
   const [content, setContent] = useState("");
   const [fontStyle, setFontStyle] = useState("Inter, sans-serif");
   const [textColor, setTextColor] = useState("#1f2937");
   const [backgroundColor, setBackgroundColor] = useState("#f3f4f6");
-  const [backgroundMode,setBackgroundMode]  =useState("light");
+  const [backgroundMode, setBackgroundMode] = useState("light");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contentError, setContentError] = useState("");
 
   const fontOptions = [
     "Arial", "Times New Roman", "Verdana", "Georgia", 
@@ -65,12 +69,21 @@ const AddPost = () => {
       return;
     }
 
+    if (!content.trim()) {
+      setContentError("Your message cannot be empty.");
+      return;
+    }
+    if (content.length > MAX_CHARS) {
+      setContentError(`Message must be ${MAX_CHARS} characters or fewer.`);
+      return;
+    }
+    setContentError("");
     setIsSubmitting(true);
 
     const postData = { heading, content, fontStyle, textColor, backgroundColor,backgroundMode};
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL || "http://localhost:9091"}/api/posts/create/${loggedInUser}`, {
+      const response = await apiFetch(`/api/posts/create/${loggedInUser}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(postData),
@@ -83,6 +96,7 @@ const AddPost = () => {
         setFontStyle("Inter, sans-serif");
         setTextColor("#1f2937");
         setBackgroundColor("#f3f4f6");
+        setContentError("");
       } else {
         toast.error("Something went wrong");
       }
@@ -121,14 +135,19 @@ const AddPost = () => {
 
             {/* Content */}
             <div className="form-group">
-              <label className="form-label">Your Message (Required)</label>
+              <div className="form-label-row">
+                <label className="form-label">Your Message (Required)</label>
+                <span className={`char-count ${content.length > MAX_CHARS ? "over" : content.length > MAX_CHARS * 0.9 ? "warn" : ""}`}>
+                  {content.length}/{MAX_CHARS}
+                </span>
+              </div>
               <textarea
-                className="form-textarea"
+                className={`form-textarea ${contentError ? "input-error" : ""}`}
                 rows="7"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
-                required
+                onChange={(e) => { setContent(e.target.value); if (contentError) setContentError(""); }}
               ></textarea>
+              {contentError && <p className="error-text">{contentError}</p>}
             </div>
 
             {/* Style Controls */}
@@ -151,25 +170,30 @@ const AddPost = () => {
                 <input type="color" className="color-input" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} />
               </div>
               <div>
-                <select value={backgroundMode} onChange={(e) => setBackgroundMode(e.target.value)}>
-  <option value="light">Light</option>
-  <option value="dark">Dark</option>
-</select>
-
-                </div>
+                <label className="small-label"><Palette className="small-icon" /> Mode</label>
+                <select className="form-select" value={backgroundMode} onChange={(e) => setBackgroundMode(e.target.value)}>
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </div>
               
             </div>
 
             {/* Buttons */}
             <div className="button-row">
               <button type="button" className="secondary-btn" onClick={() => {
-                setHeading(""); setContent(""); 
+                setHeading(""); setContent(""); setContentError("");
                 setFontStyle("Inter, sans-serif"); setTextColor("#1f2937"); setBackgroundColor("#f3f4f6");
               }}>
                 <Trash2 className="icon-small" /> Discard
               </button>
 
-              <button type="submit" className="primary-btn" disabled={isSubmitting}>
+              <button
+                type="submit"
+                className="primary-btn"
+                disabled={isSubmitting || !content.trim() || content.length > MAX_CHARS}
+                title={!content.trim() ? "Write something first" : content.length > MAX_CHARS ? `Over ${MAX_CHARS} character limit` : ""}
+              >
                 {isSubmitting ? "Publishing..." : <><Send className="icon-small" /> Publish</>}
               </button>
             </div>
