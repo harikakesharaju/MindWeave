@@ -50,22 +50,39 @@ public class UserController {
     	}
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
-        Optional<User> userOptional = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
+    public ResponseEntity<LoginResponse> loginUser(
+            @RequestBody LoginRequest loginRequest) {
+
+        System.out.println("========== LOGIN CONTROLLER REACHED ==========");
+        System.out.println("Email: " + loginRequest.getEmail());
+
+        Optional<User> userOptional =
+                userService.authenticateUser(
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword()
+                );
+
         if (userOptional.isEmpty()) {
+            System.out.println("========== INVALID CREDENTIALS ==========");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+
         User user = userOptional.get();
+
+        System.out.println("========== USER AUTHENTICATED ==========");
+
         String token = jwtUtil.generateToken(user.getUserId());
+
         LoginResponse response = new LoginResponse(
-            user.getUserId(),
-            user.getUsername(),
-            user.getEmail(),
-            user.getDescription(),
-            "/api/users/" + user.getUserId() + "/profile-image",
-            user.getProfileImage() != null,
-            token
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getDescription(),
+                "/api/users/" + user.getUserId() + "/profile-image",
+                user.getProfileImage() != null,
+                token
         );
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
