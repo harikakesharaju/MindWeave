@@ -54,7 +54,7 @@ public class UserController {
             @RequestBody LoginRequest loginRequest) {
 
         System.out.println("========== LOGIN CONTROLLER REACHED ==========");
-        System.out.println("Email: " + loginRequest.getEmail());
+        System.out.println("EMAIL = " + loginRequest.getEmail());
 
         Optional<User> userOptional =
                 userService.authenticateUser(
@@ -63,13 +63,10 @@ public class UserController {
                 );
 
         if (userOptional.isEmpty()) {
-            System.out.println("========== INVALID CREDENTIALS ==========");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         User user = userOptional.get();
-
-        System.out.println("========== USER AUTHENTICATED ==========");
 
         String token = jwtUtil.generateToken(user.getUserId());
 

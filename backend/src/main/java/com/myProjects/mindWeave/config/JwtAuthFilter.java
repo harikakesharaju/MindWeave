@@ -21,22 +21,52 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        // Login/register do NOT need JWT
+        if (path.equals("/api/users/login")
+                || path.equals("/api/users/register")
+                || path.matches("/api/users/\\d+/profile-image")
+                || path.startsWith("/ws-chat/")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
             String token = authHeader.substring(7);
-            if (jwtUtil.isTokenValid(token)) {
-                Long userId = jwtUtil.extractUserId(token);
-                if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(userId, null, List.of());
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+
+            try {
+                if (jwtUtil.isTokenValid(token)) {
+
+                    Long userId = jwtUtil.extractUserId(token);
+
+                    if (userId != null
+                            && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(
+                                        userId,
+                                        null,
+                                        List.of()
+                                );
+
+                        SecurityContextHolder.getContext()
+                                .setAuthentication(authentication);
+                    }
                 }
+            } catch (Exception e) {
+                // Invalid JWT -> simply don't authenticate
+                SecurityContextHolder.clearContext();
             }
         }
 

@@ -37,24 +37,25 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // VERY IMPORTANT:
-                // Allow browser CORS preflight requests
+                // CORS preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // Public endpoints
+                // Authentication endpoints
                 .requestMatchers(
                     "/api/users/login",
                     "/api/users/register"
                 ).permitAll()
 
+                // Profile images
                 .requestMatchers(
+                    HttpMethod.GET,
                     "/api/users/*/profile-image"
                 ).permitAll()
 
                 // WebSocket
                 .requestMatchers("/ws-chat/**").permitAll()
 
-                // Everything else requires JWT
+                // Everything else requires authentication
                 .anyRequest().authenticated()
             )
 
