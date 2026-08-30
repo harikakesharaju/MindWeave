@@ -29,10 +29,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // Login/register do NOT need JWT
+        // Only these endpoints should completely bypass JWT processing.
         if (path.equals("/api/users/login")
                 || path.equals("/api/users/register")
-                || path.matches("/api/users/\\d+/profile-image")
                 || path.startsWith("/ws-chat/")) {
 
             filterChain.doFilter(request, response);
@@ -51,7 +50,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     Long userId = jwtUtil.extractUserId(token);
 
                     if (userId != null
-                            && SecurityContextHolder.getContext().getAuthentication() == null) {
+                            && SecurityContextHolder.getContext()
+                                    .getAuthentication() == null) {
 
                         UsernamePasswordAuthenticationToken authentication =
                                 new UsernamePasswordAuthenticationToken(
@@ -65,7 +65,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     }
                 }
             } catch (Exception e) {
-                // Invalid JWT -> simply don't authenticate
                 SecurityContextHolder.clearContext();
             }
         }
