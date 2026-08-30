@@ -1,21 +1,37 @@
+import apiFetch from "./apiFetch";
+
 const imageCache = new Map();
 
-export const getCachedProfileImage = async (userId, baseUrl) => {
+export const getCachedProfileImage = async (userId) => {
   if (imageCache.has(userId)) {
     return imageCache.get(userId);
   }
 
   try {
-    const response = await fetch(
-      `${baseUrl}/api/users/${userId}/profile-image`
+    const response = await apiFetch(
+      `/api/users/${userId}/profile-image`
     );
 
-    if (!response.ok) return null;
+    if (!response.ok) {
+      console.error(
+        "Profile image request failed:",
+        response.status,
+        response.statusText
+      );
+      return null;
+    }
 
     const blob = await response.blob();
+
+    if (blob.size === 0) {
+      console.warn("Profile image response is empty");
+      return null;
+    }
+
     const objectUrl = URL.createObjectURL(blob);
 
     imageCache.set(userId, objectUrl);
+
     return objectUrl;
   } catch (err) {
     console.error("Failed to load profile image", err);

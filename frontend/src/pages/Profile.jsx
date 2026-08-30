@@ -183,9 +183,17 @@ const Profile = () => {
 
   useEffect(() => {
   const loadProfileImage = async () => {
-    if (!profile?.userId || !profile?.hasProfileImage) return;
+    if (!profile?.userId) {
+      setProfileImage(null);
+      return;
+    }
 
-    const img = await getCachedProfileImage(profile.userId, BASEURL);
+    if (!profile.hasProfileImage) {
+      setProfileImage(null);
+      return;
+    }
+
+    const img = await getCachedProfileImage(profile.userId);
     setProfileImage(img);
   };
 
@@ -246,7 +254,7 @@ const Profile = () => {
         );
         if (imgResponse.ok) {
           clearCachedProfileImage(profile.userId);
-          const freshImg = await getCachedProfileImage(profile.userId, BASEURL);
+          const freshImg = await getCachedProfileImage(profile.userId);
           setProfileImage(freshImg);
         }
       }

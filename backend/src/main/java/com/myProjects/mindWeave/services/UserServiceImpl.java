@@ -51,18 +51,49 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateProfileImage(Long userId, MultipartFile image) {
+
+        if (image == null || image.isEmpty()) {
+            throw new RuntimeException("Profile image is empty");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         try {
-            user.setProfileImage(image.getBytes());
-            user.setProfileImageType(image.getContentType()); // IMPORTANT
-            userRepository.save(user);
+            byte[] imageBytes = image.getBytes();
+
+            System.out.println("========== PROFILE IMAGE UPLOAD ==========");
+            System.out.println("User ID       : " + userId);
+            System.out.println("Original name : " + image.getOriginalFilename());
+            System.out.println("Content type  : " + image.getContentType());
+            System.out.println("Image size    : " + imageBytes.length);
+
+            user.setProfileImage(imageBytes);
+            user.setProfileImageType(
+                    image.getContentType() != null
+                            ? image.getContentType()
+                            : "application/octet-stream"
+            );
+
+            User savedUser = userRepository.saveAndFlush(user);
+
+            System.out.println(
+                    "Saved image size: " +
+                    (savedUser.getProfileImage() == null
+                            ? "NULL"
+                            : savedUser.getProfileImage().length)
+            );
+
+            System.out.println("==========================================");
+
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store profile image", e);
+            throw new RuntimeException(
+                    "Failed to read profile image",
+                    e
+            );
         }
     }
-
+    
     @Override
     public String getProfileImageType(Long userId) {
         User user = userRepository.findById(userId)

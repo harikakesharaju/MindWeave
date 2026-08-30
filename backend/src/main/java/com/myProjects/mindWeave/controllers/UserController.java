@@ -99,10 +99,24 @@ public class UserController {
     public ResponseEntity<byte[]> getProfileImage(@PathVariable Long userId) {
 
         byte[] image = userService.getProfileImage(userId);
+
+        if (image == null || image.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
         String contentType = userService.getProfileImageType(userId);
 
+        MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+
+        if (contentType != null && !contentType.isBlank()) {
+            try {
+                mediaType = MediaType.parseMediaType(contentType);
+            } catch (Exception ignored) {
+            }
+        }
+
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
+                .contentType(mediaType)
                 .body(image);
     }
 
