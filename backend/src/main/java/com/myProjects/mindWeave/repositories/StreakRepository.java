@@ -15,6 +15,7 @@ public interface StreakRepository extends JpaRepository<Streak, Long> {
     
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Streak> findByUserPairKey(String userPairKey);
-    
 
+    // Lock-free read for GET requests (scheduler uses the locked variant above)
+    Optional<Streak> findStreakByUserPairKey(String userPairKey);
 }

@@ -9,7 +9,7 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import PostCard from "../components/PostCard";
-import { getCachedProfileImage } from "../utils/profileImageCache";
+import { getCachedProfileImage, clearCachedProfileImage } from "../utils/profileImageCache";
 import BASEURL from "../config";
 import apiFetch from "../utils/apiFetch";
 
@@ -33,6 +33,7 @@ const Profile = () => {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({});
+  const [imageUploadFile, setImageUploadFile] = useState(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -197,8 +198,8 @@ const Profile = () => {
         username: profile.username || "",
         email: profile.email || "",
         description: profile.description || "",
-        profilePictureUrl: profile.profilePictureUrl || "",
       });
+      setImageUploadFile(null);
       setIsEditModalOpen(true);
     } else {
       console.warn("Profile data not loaded yet.");
@@ -217,30 +218,48 @@ const Profile = () => {
     }));
   };
 
+  const handleImageFileChange = (e) => {
+    setImageUploadFile(e.target.files[0] || null);
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
+      // Update text fields
       const response = await apiFetch(`/api/users/${profileId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editFormData),
       });
-      if (response.ok) {
-        console.log("Profile updated successfully");
-        const updatedProfileResponse = await apiFetch(
-          `/api/users/${profileId}`,
-          {
-            headers: loggedInUser ? { loggedInUserId: loggedInUser } : {},
-          }
-        );
-        if (updatedProfileResponse.ok) {
-          const updatedProfileData = await updatedProfileResponse.json();
-          setProfile(updatedProfileData);
-        }
-        closeEditModal();
-      } else {
+      if (!response.ok) {
         console.error("Error updating profile");
+        return;
       }
+
+      // Upload profile image if a new file was selected
+      if (imageUploadFile) {
+        const formData = new FormData();
+        formData.append("image", imageUploadFile);
+        const imgResponse = await apiFetch(
+          `/api/users/${profileId}/profile-image`,
+          { method: "POST", body: formData }
+        );
+        if (imgResponse.ok) {
+          clearCachedProfileImage(profile.userId);
+          const freshImg = await getCachedProfileImage(profile.userId, BASEURL);
+          setProfileImage(freshImg);
+        }
+      }
+
+      // Reload profile data
+      const updatedProfileResponse = await apiFetch(`/api/users/${profileId}`, {
+        headers: loggedInUser ? { loggedInUserId: loggedInUser } : {},
+      });
+      if (updatedProfileResponse.ok) {
+        const updatedProfileData = await updatedProfileResponse.json();
+        setProfile(updatedProfileData);
+      }
+      closeEditModal();
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -535,15 +554,14 @@ const Profile = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="profilePictureUrl">
-                    Profile Picture URL:
+                  <label htmlFor="profileImageFile">
+                    Profile Picture:
                   </label>
                   <input
-                    type="text"
-                    id="profilePictureUrl"
-                    name="profilePictureUrl"
-                    value={editFormData.profilePictureUrl}
-                    onChange={handleChange}
+                    type="file"
+                    id="profileImageFile"
+                    accept="image/*"
+                    onChange={handleImageFileChange}
                   />
                 </div>
                 <div className="modal-actions">

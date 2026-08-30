@@ -138,13 +138,13 @@ public class StreakServiceImpl implements StreakService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public StreakDto getStreakByUserPair(Long user1Id, Long user2Id) {
         Optional<User> user1Optional = userRepository.findById(user1Id);
         Optional<User> user2Optional = userRepository.findById(user2Id);
         if (user1Optional.isPresent() && user2Optional.isPresent()) {
             String pairKey = generateUserPairKey(user1Id, user2Id);
-            Optional<Streak> streakOptional = streakRepository.findByUserPairKey(pairKey);
+            Optional<Streak> streakOptional = streakRepository.findStreakByUserPairKey(pairKey);
             return streakOptional.map(this::convertToDto).orElse(null);
         }
         return null;

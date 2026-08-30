@@ -24,9 +24,11 @@ public class StreakController {
         StreakDto streakDto = streakService.getStreakByUserPair(user1Id, user2Id);
         if (streakDto != null) {
             return new ResponseEntity<>(streakDto, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        // No streak record yet — return 200 with length 0 instead of 404
+        StreakDto empty = new StreakDto();
+        empty.setStreakLength(0);
+        return new ResponseEntity<>(empty, HttpStatus.OK);
     }
 
 

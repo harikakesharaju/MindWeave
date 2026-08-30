@@ -22,3 +22,10 @@ export const getCachedProfileImage = async (userId, baseUrl) => {
     return null;
   }
 };
+
+export const clearCachedProfileImage = (userId) => {
+  if (imageCache.has(userId)) {
+    URL.revokeObjectURL(imageCache.get(userId));
+    imageCache.delete(userId);
+  }
+};
