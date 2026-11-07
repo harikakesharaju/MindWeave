@@ -1,6 +1,7 @@
 package com.myProjects.mindWeave.entities;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,8 +17,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "posts")
@@ -72,10 +71,10 @@ public class Post {
 			this.heading = heading;
 		}
 	    
-	    @PrePersist
-	    protected void onCreate() {
-	        timestamp = LocalDateTime.now();
-	    }
+		@PrePersist
+		protected void onCreate() {
+		    timestamp = LocalDateTime.now(ZoneOffset.UTC);
+		}
 
 	    // Getters and setters (ensure you have these for fontSize)
 	    public Integer getFontSize() {

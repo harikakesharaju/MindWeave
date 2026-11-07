@@ -23,6 +23,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private StreakService streakService;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -141,23 +144,53 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> getUserDtoById(Long userId, Long loggedInUserId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            UserDto dto = convertToDto(user);
-            if (loggedInUserId != null && !loggedInUserId.equals(userId)) {
-                Optional<User> loggedInUserOptional = userRepository.findById(loggedInUserId);
-                if (loggedInUserOptional.isPresent()) {
-                    User loggedInUser = loggedInUserOptional.get();
-                    dto.setHasSentRequestTo(loggedInUser.getRequested().contains(user));
-                    // Check if the viewed user has sent a request to the logged-in user
-                    dto.setHasSentRequestToMe(user.getRequested().contains(loggedInUser));
-                }
-            }
-            return Optional.of(dto);
+    public Optional<UserDto> getUserDtoById(
+            Long userId,
+            Long loggedInUserId) {
+
+        Optional<User> userOptional =
+                userRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        User user = userOptional.get();
+
+        // Trigger streak calculation when another profile is opened.
+        if (loggedInUserId != null &&
+                !loggedInUserId.equals(userId)) {
+
+            streakService.updateStreakOnProfileView(
+                    loggedInUserId,
+                    userId
+            );
+        }
+
+        UserDto dto = convertToDto(user);
+
+        if (loggedInUserId != null &&
+                !loggedInUserId.equals(userId)) {
+
+            Optional<User> loggedInUserOptional =
+                    userRepository.findById(loggedInUserId);
+
+            if (loggedInUserOptional.isPresent()) {
+
+                User loggedInUser =
+                        loggedInUserOptional.get();
+
+                dto.setHasSentRequestTo(
+                        loggedInUser.getRequested().contains(user)
+                );
+
+                dto.setHasSentRequestToMe(
+                        user.getRequested().contains(loggedInUser)
+                );
+            }
+        }
+
+        return Optional.of(dto);
     }
 
     @Override
